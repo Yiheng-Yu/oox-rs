@@ -616,38 +616,38 @@ impl OfficeStyleSheet {
         let mut extra_color_scheme_list = None;
         let mut custom_color_list = None;
 
-        for child_node in &xml_node.child_nodes {
-            let local_name = child_node.local_name();
-            match local_name {
-                "themeElements" => theme_elements = Some(Box::new(BaseStyles::from_xml_element(child_node)?)),
-                "objectDefaults" => object_defaults = Some(ObjectStyleDefaults::from_xml_element(child_node)?),
-                "themeOverride" => {
-                    theme_elements = Some(Box::new(BaseStyles::from_xml_element(child_node)?));
-                    println!("{:#?}", &theme_elements);
+        if xml_node.local_name() == "themeOverride" {
+            theme_elements = Some(Box::new(BaseStyles::from_xml_element(&xml_node)?));
+        } else {
+            for child_node in &xml_node.child_nodes {
+                let local_name = child_node.local_name();
+                match local_name {
+                    "themeElements" => theme_elements = Some(Box::new(BaseStyles::from_xml_element(child_node)?)),
+                    "objectDefaults" => object_defaults = Some(ObjectStyleDefaults::from_xml_element(child_node)?),
+                    "extraClrSchemeLst" => {
+                        extra_color_scheme_list = Some(
+                            child_node
+                                .child_nodes
+                                .iter()
+                                .filter(|child_node| child_node.local_name() == "extraClrScheme")
+                                .map(ColorSchemeAndMapping::from_xml_element)
+                                .collect::<Result<Vec<_>>>()?,
+                        );
+                    }
+                    "custClrLst" => {
+                        custom_color_list = Some(
+                            child_node
+                                .child_nodes
+                                .iter()
+                                .filter(|child_node| child_node.local_name() == "custClr")
+                                .map(CustomColor::from_xml_element)
+                                .collect::<Result<Vec<_>>>()?,
+                        )
+                    }
+                    _ => (),
                 }
-                "extraClrSchemeLst" => {
-                    extra_color_scheme_list = Some(
-                        child_node
-                            .child_nodes
-                            .iter()
-                            .filter(|child_node| child_node.local_name() == "extraClrScheme")
-                            .map(ColorSchemeAndMapping::from_xml_element)
-                            .collect::<Result<Vec<_>>>()?,
-                    );
-                }
-                "custClrLst" => {
-                    custom_color_list = Some(
-                        child_node
-                            .child_nodes
-                            .iter()
-                            .filter(|child_node| child_node.local_name() == "custClr")
-                            .map(CustomColor::from_xml_element)
-                            .collect::<Result<Vec<_>>>()?,
-                    )
-                }
-                _ => (),
             }
-        }
+        };
 
         let theme_elements =
             theme_elements.ok_or_else(
