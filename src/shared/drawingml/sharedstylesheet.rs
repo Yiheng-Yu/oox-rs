@@ -617,7 +617,8 @@ impl OfficeStyleSheet {
         let mut custom_color_list = None;
 
         for child_node in &xml_node.child_nodes {
-            match child_node.local_name() {
+            let local_name = child_node.local_name();
+            match local_name {
                 "themeElements" => theme_elements = Some(Box::new(BaseStyles::from_xml_element(child_node)?)),
                 "objectDefaults" => object_defaults = Some(ObjectStyleDefaults::from_xml_element(child_node)?),
                 "themeOverride" => {
@@ -648,7 +649,6 @@ impl OfficeStyleSheet {
             }
         }
 
-        println!("{:#?}", &theme_elements);
         let theme_elements =
             theme_elements.ok_or_else(
                 || MissingChildNodeError::new(xml_node.name.clone(), "themeElements")
