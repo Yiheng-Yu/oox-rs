@@ -22,7 +22,9 @@ use crate::{
     xsdtypes::{XsdChoice, XsdType},
 };
 use std::{error::Error, io::Read, str::FromStr};
+use std::fs::File;
 use zip::read::ZipFile;
+use log::{info, warn};
 
 use super::{
     animation::{Build, TimeNodeGroup},
@@ -383,7 +385,7 @@ pub struct SlideMaster {
 }
 
 impl SlideMaster {
-    pub fn from_zip_file(zip_file: &mut ZipFile<'_>) -> Result<Self> {
+    pub fn from_zip_file(zip_file: &mut ZipFile<&File>) -> Result<Self> {
         let mut xml_string = String::new();
         zip_file.read_to_string(&mut xml_string)?;
 
@@ -403,15 +405,39 @@ impl SlideMaster {
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
-                "cSld" => common_slide_data = Some(Box::new(CommonSlideData::from_xml_element(child_node)?)),
-                "clrMap" => color_mapping = Some(Box::new(ColorMapping::from_xml_element(child_node)?)),
-                "sldLayoutIdLst" => slide_layout_id_list = Some(SlideLayoutIdList::from_xml_element(child_node)?),
-                "transition" => transition = Some(Box::new(SlideTransition::from_xml_element(child_node)?)),
-                "timing" => timing = Some(SlideTiming::from_xml_element(child_node)?),
-                "hf" => header_footer = Some(HeaderFooter::from_xml_element(child_node)?),
-                "txStyles" => text_styles = Some(SlideMasterTextStyles::from_xml_element(child_node)?),
-                _ => (),
-            }
+                "cSld" => {
+                    common_slide_data = CommonSlideData::from_xml_element(child_node)
+                        .ok()
+                        .map(Box::new);
+                }
+                "clrMap" => {
+                    color_mapping = ColorMapping::from_xml_element(child_node)
+                        .ok()
+                        .map(Box::new);
+                }
+                "sldLayoutIdLst" => {
+                    slide_layout_id_list = SlideLayoutIdList::from_xml_element(child_node)
+                        .ok();
+                }
+                "transition" => {
+                    transition = SlideTransition::from_xml_element(child_node)
+                        .ok()
+                        .map(Box::new);
+                }
+                "timing" => {
+                    timing = SlideTiming::from_xml_element(child_node)
+                        .ok();
+                }
+                "hf" => {
+                    header_footer = HeaderFooter::from_xml_element(child_node)
+                        .ok();
+                }
+                "txStyles" => {
+                    text_styles = SlideMasterTextStyles::from_xml_element(child_node)
+                        .ok();
+                }
+        _ => (),
+    }
         }
 
         let common_slide_data =
@@ -478,7 +504,7 @@ pub struct SlideLayout {
 }
 
 impl SlideLayout {
-    pub fn from_zip_file(zip_file: &mut ZipFile<'_>) -> Result<Self> {
+    pub fn from_zip_file(zip_file: &mut ZipFile<&File>) -> Result<Self> {
         let mut xml_string = String::new();
         zip_file.read_to_string(&mut xml_string)?;
 
@@ -606,18 +632,24 @@ pub struct Slide {
 }
 
 impl Slide {
-    pub fn from_zip_file(zip_file: &mut ZipFile<'_>) -> Result<Self> {
+    pub fn from_zip_file(zip_file: &mut ZipFile<&File>) -> Result<Self> {
         let mut xml_string = String::new();
         zip_file.read_to_string(&mut xml_string)?;
-
-        Self::from_xml_element(&XmlNode::from_str(xml_string.as_str())?)
+        
+        let node: XmlNode = XmlNode::from_str(xml_string.as_str()).expect("Error parsing XML string!");
+        // node.child_nodes;
+        match Self::from_xml_element(&node) {
+            Ok(slide) => {Ok(slide)},
+            Err(err) => {
+                return Err(err)
+            }
+        }
     }
 
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
         let mut show = None;
         let mut show_master_shapes = None;
         let mut show_master_placeholder_animations = None;
-
         for (attr, value) in &xml_node.attributes {
             match attr.as_str() {
                 "show" => show = Some(parse_xml_bool(value)?),
@@ -633,7 +665,8 @@ impl Slide {
         let mut timing = None;
 
         for child_node in &xml_node.child_nodes {
-            match child_node.local_name() {
+            let local_name = child_node.local_name();
+            match local_name {
                 "cSld" => common_slide_data = Some(Box::new(CommonSlideData::from_xml_element(child_node)?)),
                 "clrMapOvr" => {
                     color_mapping_override = Some(
@@ -1262,7 +1295,8 @@ impl GroupShapeNonVisual {
         let mut app_props = None;
 
         for child_node in &xml_node.child_nodes {
-            match child_node.local_name() {
+            let local_name: &str = child_node.local_name();
+            match local_name {
                 "cNvPr" => drawing_props = Some(Box::new(NonVisualDrawingProps::from_xml_element(child_node)?)),
                 "cNvGrpSpPr" => {
                     group_drawing_props = Some(NonVisualGroupDrawingShapeProps::from_xml_element(child_node)?)
@@ -2470,10 +2504,12 @@ impl SlideTiming {
                         instance.time_node_list = if !vec.is_empty() {
                             Some(vec)
                         } else {
-                            return Err(Box::<dyn Error>::from(MissingChildNodeError::new(
+                            let warning: MissingChildNodeError = MissingChildNodeError::new(
                                 child_node.name.clone(),
                                 "tn",
-                            )));
+                            );
+                            warn!("{}", warning);
+                            None
                         }
                     }
                     "bldLst" => {
@@ -2487,10 +2523,11 @@ impl SlideTiming {
                         instance.build_list = if !vec.is_empty() {
                             Some(vec)
                         } else {
-                            return Err(Box::<dyn Error>::from(MissingChildNodeError::new(
-                                child_node.name.clone(),
-                                "bld",
-                            )));
+                            let warning: MissingChildNodeError = MissingChildNodeError::new(
+                                child_node.name.clone(),"bld",
+                            );
+                            warn!("{}", warning);
+                            None
                         }
                     }
                     _ => (),

@@ -2474,7 +2474,7 @@ pub enum BrType {
     Page,
     #[strum(serialize = "column")]
     Column,
-    #[strum(serialzie = "textWrapping")]
+    #[strum(serialize = "textWrapping")]
     TextWrapping,
 }
 

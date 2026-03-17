@@ -10,9 +10,10 @@ use crate::{
 };
 use log::trace;
 use std::{io::Read, str::FromStr};
+use std::fs::File;
 use zip::read::ZipFile;
 
-pub type Result<T> = ::std::result::Result<T, Box<dyn (::std::error::Error)>>;
+pub type Result<T> = ::std::result::Result<T, Box<dyn std::error::Error>>;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ColorMapping {
@@ -598,7 +599,7 @@ pub struct OfficeStyleSheet {
 }
 
 impl OfficeStyleSheet {
-    pub fn from_zip_file(zip_file: &mut ZipFile<'_>) -> Result<Self> {
+    pub fn from_zip_file(zip_file: &mut ZipFile<&File>) -> Result<Self> {
         let mut xml_string = String::new();
         zip_file.read_to_string(&mut xml_string)?;
         let xml_node = XmlNode::from_str(xml_string.as_str())?;
@@ -619,6 +620,10 @@ impl OfficeStyleSheet {
             match child_node.local_name() {
                 "themeElements" => theme_elements = Some(Box::new(BaseStyles::from_xml_element(child_node)?)),
                 "objectDefaults" => object_defaults = Some(ObjectStyleDefaults::from_xml_element(child_node)?),
+                "themeOverride" => {
+                    theme_elements = Some(Box::new(BaseStyles::from_xml_element(child_node)?));
+                    println!("{:#?}", &theme_elements);
+                }
                 "extraClrSchemeLst" => {
                     extra_color_scheme_list = Some(
                         child_node
@@ -643,8 +648,11 @@ impl OfficeStyleSheet {
             }
         }
 
+        println!("{:#?}", &theme_elements);
         let theme_elements =
-            theme_elements.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "themeElements"))?;
+            theme_elements.ok_or_else(
+                || MissingChildNodeError::new(xml_node.name.clone(), "themeElements")
+            )?;
 
         Ok(Self {
             name,
