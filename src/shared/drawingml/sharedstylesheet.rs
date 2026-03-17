@@ -615,7 +615,7 @@ impl OfficeStyleSheet {
         let mut object_defaults = None;
         let mut extra_color_scheme_list = None;
         let mut custom_color_list = None;
- 
+  
         if xml_node.local_name() == "themeOverride" {
             theme_elements = Some(Box::new(BaseStyles::from_xml_element(&xml_node)?));
         } else {
