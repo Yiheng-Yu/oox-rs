@@ -4134,8 +4134,11 @@ mod tests {
     #[test]
     pub fn test_tl_common_behavior_data_from_xml() {
         let xml = TLCommonBehaviorData::test_xml("tlCommonBehaviorData");
+        // todo: update this?
         assert_eq!(
-            TLCommonBehaviorData::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
+            TLCommonBehaviorData::from_xml_element(
+                &XmlNode::from_str(&xml).unwrap()
+            ).unwrap(),
             TLCommonBehaviorData::test_instance()
         );
     }
