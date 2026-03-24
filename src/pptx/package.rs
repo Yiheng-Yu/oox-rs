@@ -10,8 +10,10 @@ use crate::shared::{
 use log::info;
 use std::collections::HashMap;
 use std::fs::File;
+use std::error::Error;
 use std::path::{Path, PathBuf};
 use zip::ZipArchive;
+
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Package {
@@ -30,7 +32,7 @@ pub struct Package {
 }
 
 impl Package {
-    pub fn from_file(pptx_path: &Path) -> Result<Self, Box<dyn (::std::error::Error)>> {
+    pub fn from_file(pptx_path: &Path) -> Result<Self, Box<dyn Error>> {
         let pptx_file = File::open(&pptx_path)?;
         let mut zipper = ZipArchive::new(&pptx_file)?;
 
@@ -107,7 +109,8 @@ impl Package {
                     }
 
                     info!("parsing slide file: {}", zip_file.name());
-                    slide_map.insert(file_path, Box::new(Slide::from_zip_file(&mut zip_file)?));
+                    let slide = Box::new(Slide::from_zip_file(&mut zip_file)?);
+                    slide_map.insert(file_path, slide);
                 }
                 file_path if file_path.starts_with("ppt/media") => {
                     medias.push(file_path);
@@ -132,7 +135,7 @@ impl Package {
         })
     }
 
-    pub fn slides(&self) -> Slides {
+    pub fn slides<'a>(&'a self) -> Slides<'a> {
         Slides::new(&self.slide_map)
     }
 }
@@ -156,10 +159,11 @@ impl<'a> Iterator for Slides<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         for i in self.current_page_num..=self.slide_map.len() {
-            let opt_slide = self.slide_map.get(&PathBuf::from(format!("ppt/slides/slide{}.xml", i)));
+            let opt_slide: Option<&Box<Slide>> = self.slide_map.get(&PathBuf::from(format!("ppt/slides/slide{}.xml", i)));
             self.current_page_num += 1;
-            if let Some(slide) = opt_slide {
-                return Some(slide);
+            match opt_slide {
+                Some(slide) => return Some(slide),
+                _ => (),
             }
         }
 
