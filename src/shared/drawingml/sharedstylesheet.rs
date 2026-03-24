@@ -652,7 +652,6 @@ pub struct OfficeStyleSheet {
     /// This can be very useful, for example, when someone would like to maintain a corporate color palette.
     pub custom_color_list: Option<Vec<CustomColor>>,
 
-    /// Available ONLY for office 2007 and above.
     /// TODO: testing implementations of themeOverride behaviour, currently placed
     /// documentation: https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.drawing.themeoverride
     pub theme_override: Option<Box<BaseStyles>>,
