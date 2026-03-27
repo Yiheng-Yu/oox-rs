@@ -111,17 +111,26 @@ impl ColorMapping {
             }
         }
 
-        let background1: ColorSchemeIndex = background1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "bg1"))?;
+        let background1: ColorSchemeIndex =
+            background1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "bg1"))?;
         let text1: ColorSchemeIndex = text1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "tx1"))?;
-        let background2: ColorSchemeIndex = background2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "bg2"))?;
+        let background2: ColorSchemeIndex =
+            background2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "bg2"))?;
         let text2: ColorSchemeIndex = text2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "tx2"))?;
-        let accent1: ColorSchemeIndex = accent1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent1"))?;
-        let accent2: ColorSchemeIndex = accent2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent2"))?;
-        let accent3: ColorSchemeIndex = accent3.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent3"))?;
-        let accent4: ColorSchemeIndex = accent4.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent4"))?;
-        let accent5: ColorSchemeIndex = accent5.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent5"))?;
-        let accent6: ColorSchemeIndex = accent6.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent6"))?;
-        let hyperlink: ColorSchemeIndex = hyperlink.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "hlink"))?;
+        let accent1: ColorSchemeIndex =
+            accent1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent1"))?;
+        let accent2: ColorSchemeIndex =
+            accent2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent2"))?;
+        let accent3: ColorSchemeIndex =
+            accent3.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent3"))?;
+        let accent4: ColorSchemeIndex =
+            accent4.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent4"))?;
+        let accent5: ColorSchemeIndex =
+            accent5.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent5"))?;
+        let accent6: ColorSchemeIndex =
+            accent6.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent6"))?;
+        let hyperlink: ColorSchemeIndex =
+            hyperlink.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "hlink"))?;
         let followed_hyperlink: ColorSchemeIndex =
             followed_hyperlink.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "folHlink"))?;
 
@@ -586,7 +595,7 @@ pub struct OfficeStyleSheet {
     /// In this example, we see the basic structure of how a theme elements is defined and have left out the true guts of
     /// each individual piece to save room. Each part (color scheme, font scheme, format scheme) is defined elsewhere
     /// within DrawingML.
-    /// UPDATE: Set as optional since themeOverride file (`theme/themeOverride{number}.xml`) does not contain <theme> tag 
+    /// UPDATE: Set as optional since themeOverride file (`theme/themeOverride{number}.xml`) does not contain <theme> tag
     pub theme_elements: Option<Box<BaseStyles>>,
 
     /// This element allows for the definition of default shape, line, and textbox formatting properties. An application
@@ -778,7 +787,7 @@ impl BaseStyles {
 
         let color_scheme: Box<ColorScheme> =
             color_scheme.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "clrScheme"))?;
-        let font_scheme: FontScheme = 
+        let font_scheme: FontScheme =
             font_scheme.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "fontScheme"))?;
         let format_scheme: Box<StyleMatrix> =
             format_scheme.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "fmtScheme"))?;

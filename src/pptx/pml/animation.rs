@@ -2827,8 +2827,6 @@ impl TLTimeAnimateValueList {
     }
 }
 
-
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum TLTimeAnimateValueTime {
     Percentage(PositiveFixedPercentage),
@@ -2849,15 +2847,11 @@ impl FromStr for TLTimeAnimateValueTime {
                         .map_err(|_| Self::Err::new("TLTimeAnimateValueTime"))?
                         .div(100.0)
                 } else {
-                    s.parse::<f32>()
-                    .map_err(|_| Self::Err::new("TLTimeAnimateValueTime"))?
+                    s.parse::<f32>().map_err(|_| Self::Err::new("TLTimeAnimateValueTime"))?
                 };
 
                 Ok(TLTimeAnimateValueTime::Percentage(perc))
             }
-            // _ => {}Ok(TLTimeAnimateValueTime::Percentage(
-            //     s.parse().map_err(|_| Self::Err::new("TLTimeAnimateValueTime"))?,
-            // )),
         }
     }
 }
@@ -4152,11 +4146,9 @@ mod tests {
         let xml: String = TLCommonBehaviorData::test_xml("tlCommonBehaviorData");
         // TODO: update this?
         let element: &XmlNode = &XmlNode::from_str(&xml).unwrap();
-        let instance_xml: TLCommonBehaviorData = 
-            TLCommonBehaviorData::from_xml_element(&element)
-            .unwrap();
+        let instance_xml: TLCommonBehaviorData = TLCommonBehaviorData::from_xml_element(&element).unwrap();
         let instance_test: TLCommonBehaviorData = TLCommonBehaviorData::test_instance();
-        
+
         assert_eq!(instance_xml, instance_test);
     }
 
@@ -4658,21 +4650,21 @@ mod tests {
 
         pub fn test_instance() -> Self {
             let members: Vec<TLTimeAnimateValue> = vec![
-                TLTimeAnimateValue{
+                TLTimeAnimateValue {
                     time: Some(TLTimeAnimateValueTime::Percentage(0.1)),
                     formula: Some(r"\#ppt_y-sin(pi*$)/3".to_string()),
-                    value: Some(TLAnimVariant::Float(0.5))
+                    value: Some(TLAnimVariant::Float(0.5)),
                 },
-                TLTimeAnimateValue{
+                TLTimeAnimateValue {
                     time: Some(TLTimeAnimateValueTime::Percentage(1.0)),
                     formula: None,
-                    value: Some(TLAnimVariant::Float(1.0))
+                    value: Some(TLAnimVariant::Float(1.0)),
                 },
-                TLTimeAnimateValue{
+                TLTimeAnimateValue {
                     time: Some(TLTimeAnimateValueTime::Percentage(0.2)),
                     formula: None,
-                    value: Some(TLAnimVariant::String(r"\#ppt_y".to_string()))
-                }
+                    value: Some(TLAnimVariant::String(r"\#ppt_y".to_string())),
+                },
             ];
             Self(members)
         }
@@ -4684,22 +4676,21 @@ mod tests {
         let instance_target: TLTimeAnimateValueList = TLTimeAnimateValueList::test_instance();
 
         let element: &XmlNode = &XmlNode::from_str(&xml).unwrap();
-        let instance_xml: TLTimeAnimateValueList = 
-            TLTimeAnimateValueList::from_xml_element(&element)
-            .unwrap();
+        let instance_xml: TLTimeAnimateValueList = TLTimeAnimateValueList::from_xml_element(&element).unwrap();
 
         assert_eq!(instance_xml, instance_target);
     }
 
     impl TLAnimateBehavior {
         pub fn test_xml(node_name: &'static str) -> String {
-            format!(r#"<{node_name} by="Example" from="Example" to="Example" calcmode="fmla" valueType="str">
+            format!(
+                r#"<{node_name} by="Example" from="Example" to="Example" calcmode="fmla" valueType="str">
                 {}
                 {}
             </{node_name}>"#,
                 TLCommonBehaviorData::test_xml("cBhvr"),
                 TLTimeAnimateValueList::test_xml("tavLst"),
-                node_name=node_name,
+                node_name = node_name,
             )
         }
 

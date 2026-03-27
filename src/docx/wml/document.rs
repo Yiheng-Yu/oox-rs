@@ -3689,7 +3689,7 @@ impl RangeMarkupElements {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MathContent {
     // OMathParagraph(OMathParagraph),
-// OMath(OMath),
+    // OMath(OMath),
 }
 
 impl MathContent {

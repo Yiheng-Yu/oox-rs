@@ -9,11 +9,10 @@ use crate::shared::{
 };
 use log::info;
 use std::collections::HashMap;
-use std::fs::File;
 use std::error::Error;
+use std::fs::File;
 use std::path::{Path, PathBuf};
 use zip::ZipArchive;
-
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Package {
@@ -59,7 +58,7 @@ impl Package {
                     if file_path.extension().unwrap_or_default() != "xml" {
                         continue;
                     }
-                    
+
                     info!("parsing theme file: {}", zip_file.name());
                     theme_map.insert(file_path, Box::new(OfficeStyleSheet::from_zip_file(&mut zip_file)?));
                 }
@@ -159,7 +158,8 @@ impl<'a> Iterator for Slides<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         for i in self.current_page_num..=self.slide_map.len() {
-            let opt_slide: Option<&Box<Slide>> = self.slide_map.get(&PathBuf::from(format!("ppt/slides/slide{}.xml", i)));
+            let opt_slide: Option<&Box<Slide>> =
+                self.slide_map.get(&PathBuf::from(format!("ppt/slides/slide{}.xml", i)));
             self.current_page_num += 1;
             match opt_slide {
                 Some(slide) => return Some(slide),

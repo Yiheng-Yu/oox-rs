@@ -1,10 +1,10 @@
-use std::fs::File;
-use regex::Regex;
 use crate::error::{InvalidXmlError, ParseBoolError};
 use quick_xml::{
     events::{BytesStart, Event},
     Reader,
 };
+use regex::Regex;
+use std::fs::File;
 use std::{
     collections::HashMap,
     fmt::{Display, Formatter},
@@ -42,14 +42,15 @@ impl XmlNode {
         let pattern: Regex = Regex::new(r"^[A-Za-z]+:(?P<local_name>[A-Za-z0-9]+)").expect("Error creating regex");
         match pattern.captures(&self.name) {
             Some(capture) => capture.name("local_name").unwrap().as_str(),
-            None => &self.name
+            None => &self.name,
         }
     }
 
     fn from_quick_xml_element(xml_element: &BytesStart<'_>) -> Result<Self, ::std::str::Utf8Error> {
         let name_string: &str = std::str::from_utf8(xml_element.as_ref())?;
         let name_pattern = Regex::new(r"^(?P<name>[^\s]+)").unwrap();
-        let name: String = name_pattern.captures(&name_string)
+        let name: String = name_pattern
+            .captures(&name_string)
             .expect("Regex match failed")
             .name("name")
             .expect("Unable to find match")
