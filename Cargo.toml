@@ -1,7 +1,7 @@
 [package]
 name = "oox"
 version = "0.1.0"
-edition = "2018"
+edition = "2024"
 description = "Open Office XML file format deserializer"
 authors = ["Kalmár Róbert <rfrostkalmar@gmail.com>"]
 keywords = ["office", "pptx", "ppt", "docx", "doc"]

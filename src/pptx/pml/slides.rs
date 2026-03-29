@@ -18,7 +18,7 @@ use crate::{
         },
         relationship::RelationshipId,
     },
-    xml::{parse_xml_bool, XmlNode},
+    xml::{XmlNode, parse_xml_bool},
     xsdtypes::{XsdChoice, XsdType},
 };
 use log::{info, warn};
@@ -385,55 +385,40 @@ pub struct SlideMaster {
 }
 
 impl SlideMaster {
-    pub fn from_zip_file(zip_file: &mut ZipFile<&File>) -> Result<Self> {
-        let mut xml_string: String = String::new();
+    pub fn from_zip_file(zip_file: &mut ZipFile<&std::fs::File>) -> Result<Self> {
+        let mut xml_string = String::new();
         zip_file.read_to_string(&mut xml_string)?;
 
         Self::from_xml_element(&XmlNode::from_str(xml_string.as_str())?)
     }
 
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let preserve: Option<bool> = xml_node.attributes.get("preserve").map(parse_xml_bool).transpose()?;
+        let preserve = xml_node.attributes.get("preserve").map(parse_xml_bool).transpose()?;
 
-        let mut common_slide_data: Option<Box<CommonSlideData>> = None;
-        let mut color_mapping: Option<Box<ColorMapping>> = None;
-        let mut slide_layout_id_list: Option<SlideLayoutIdList> = None;
-        let mut transition: Option<Box<SlideTransition>> = None;
-        let mut timing: Option<SlideTiming> = None;
-        let mut header_footer: Option<HeaderFooter> = None;
-        let mut text_styles: Option<SlideMasterTextStyles> = None;
+        let mut common_slide_data = None;
+        let mut color_mapping = None;
+        let mut slide_layout_id_list = None;
+        let mut transition = None;
+        let mut timing = None;
+        let mut header_footer = None;
+        let mut text_styles = None;
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
-                "cSld" => {
-                    common_slide_data = CommonSlideData::from_xml_element(child_node).ok().map(Box::new);
-                }
-                "clrMap" => {
-                    color_mapping = ColorMapping::from_xml_element(child_node).ok().map(Box::new);
-                }
-                "sldLayoutIdLst" => {
-                    slide_layout_id_list = SlideLayoutIdList::from_xml_element(child_node).ok();
-                }
-                "transition" => {
-                    transition = SlideTransition::from_xml_element(child_node).ok().map(Box::new);
-                }
-                "timing" => {
-                    timing = SlideTiming::from_xml_element(child_node).ok();
-                }
-                "hf" => {
-                    header_footer = HeaderFooter::from_xml_element(child_node).ok();
-                }
-                "txStyles" => {
-                    text_styles = SlideMasterTextStyles::from_xml_element(child_node).ok();
-                }
+                "cSld" => common_slide_data = Some(Box::new(CommonSlideData::from_xml_element(child_node)?)),
+                "clrMap" => color_mapping = Some(Box::new(ColorMapping::from_xml_element(child_node)?)),
+                "sldLayoutIdLst" => slide_layout_id_list = Some(SlideLayoutIdList::from_xml_element(child_node)?),
+                "transition" => transition = Some(Box::new(SlideTransition::from_xml_element(child_node)?)),
+                "timing" => timing = Some(SlideTiming::from_xml_element(child_node)?),
+                "hf" => header_footer = Some(HeaderFooter::from_xml_element(child_node)?),
+                "txStyles" => text_styles = Some(SlideMasterTextStyles::from_xml_element(child_node)?),
                 _ => (),
             }
         }
 
-        let common_slide_data: Box<CommonSlideData> =
+        let common_slide_data =
             common_slide_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cSld"))?;
-        let color_mapping: Box<ColorMapping> =
-            color_mapping.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "clrMap"))?;
+        let color_mapping = color_mapping.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "clrMap"))?;
 
         Ok(Self {
             common_slide_data,
@@ -495,20 +480,20 @@ pub struct SlideLayout {
 }
 
 impl SlideLayout {
-    pub fn from_zip_file(zip_file: &mut ZipFile<&File>) -> Result<Self> {
-        let mut xml_string: String = String::new();
+    pub fn from_zip_file(zip_file: &mut ZipFile<&std::fs::File>) -> Result<Self> {
+        let mut xml_string = String::new();
         zip_file.read_to_string(&mut xml_string)?;
 
         Self::from_xml_element(&XmlNode::from_str(xml_string.as_str())?)
     }
 
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let mut matching_name: Option<String> = None;
-        let mut slide_layout_type: Option<SlideLayoutType> = None;
-        let mut preserve: Option<bool> = None;
-        let mut is_user_drawn: Option<bool> = None;
-        let mut show_master_shapes: Option<bool> = None;
-        let mut show_master_placeholder_animations: Option<bool> = None;
+        let mut matching_name = None;
+        let mut slide_layout_type = None;
+        let mut preserve = None;
+        let mut is_user_drawn = None;
+        let mut show_master_shapes = None;
+        let mut show_master_placeholder_animations = None;
 
         for (attr, value) in &xml_node.attributes {
             match attr.as_str() {
@@ -522,11 +507,11 @@ impl SlideLayout {
             }
         }
 
-        let mut common_slide_data: Option<Box<CommonSlideData>> = None;
-        let mut color_mapping_override: Option<ColorMappingOverride> = None;
-        let mut transition: Option<Box<SlideTransition>> = None;
-        let mut timing: Option<SlideTiming> = None;
-        let mut header_footer: Option<HeaderFooter> = None;
+        let mut common_slide_data = None;
+        let mut color_mapping_override = None;
+        let mut transition = None;
+        let mut timing = None;
+        let mut header_footer = None;
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
@@ -553,7 +538,7 @@ impl SlideLayout {
             }
         }
 
-        let common_slide_data: Box<CommonSlideData> =
+        let common_slide_data =
             common_slide_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cSld"))?;
 
         Ok(Self {
@@ -623,12 +608,10 @@ pub struct Slide {
 }
 
 impl Slide {
-    pub fn from_zip_file(zip_file: &mut ZipFile<&File>) -> Result<Self> {
-        let mut xml_string: String = String::new();
+    pub fn from_zip_file(zip_file: &mut ZipFile<&std::fs::File>) -> Result<Self> {
+        let mut xml_string = String::new();
         zip_file.read_to_string(&mut xml_string)?;
-
-        let node: XmlNode = XmlNode::from_str(xml_string.as_str()).expect("Error parsing XML string!");
-        // node.child_nodes;
+        let node = XmlNode::from_str(xml_string.as_str()).expect("Error parsing XML string!");
         match Self::from_xml_element(&node) {
             Ok(slide) => Ok(slide),
             Err(err) => return Err(err),
@@ -636,9 +619,10 @@ impl Slide {
     }
 
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let mut show: Option<bool> = None;
-        let mut show_master_shapes: Option<bool> = None;
-        let mut show_master_placeholder_animations: Option<bool> = None;
+        let mut show = None;
+        let mut show_master_shapes = None;
+        let mut show_master_placeholder_animations = None;
+
         for (attr, value) in &xml_node.attributes {
             match attr.as_str() {
                 "show" => show = Some(parse_xml_bool(value)?),
@@ -648,14 +632,13 @@ impl Slide {
             }
         }
 
-        let mut common_slide_data: Option<Box<CommonSlideData>> = None;
-        let mut color_mapping_override: Option<ColorMappingOverride> = None;
-        let mut transition: Option<Box<SlideTransition>> = None;
-        let mut timing: Option<SlideTiming> = None;
+        let mut common_slide_data = None;
+        let mut color_mapping_override = None;
+        let mut transition = None;
+        let mut timing = None;
 
         for child_node in &xml_node.child_nodes {
-            let local_name: &str = child_node.local_name();
-            match local_name {
+            match child_node.local_name() {
                 "cSld" => common_slide_data = Some(Box::new(CommonSlideData::from_xml_element(child_node)?)),
                 "clrMapOvr" => {
                     color_mapping_override = Some(
@@ -678,7 +661,7 @@ impl Slide {
             }
         }
 
-        let common_slide_data: Box<CommonSlideData> =
+        let common_slide_data =
             common_slide_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cSld"))?;
 
         Ok(Self {
@@ -707,14 +690,14 @@ pub struct BackgroundProperties {
 
 impl BackgroundProperties {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let shade_to_title: Option<bool> = xml_node
+        let shade_to_title = xml_node
             .attributes
             .get("shadeToTitle")
             .map(parse_xml_bool)
             .transpose()?;
 
-        let mut fill: Option<FillProperties> = None;
-        let mut effect: Option<EffectProperties> = None;
+        let mut fill = None;
+        let mut effect = None;
 
         for child_node in &xml_node.child_nodes {
             if FillProperties::is_choice_member(child_node.local_name()) {
@@ -724,8 +707,7 @@ impl BackgroundProperties {
             }
         }
 
-        let fill: FillProperties =
-            fill.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_FillProperties"))?;
+        let fill = fill.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_FillProperties"))?;
 
         Ok(Self {
             shade_to_title,
@@ -809,10 +791,9 @@ pub struct Background {
 
 impl Background {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let black_and_white_mode: Option<BlackWhiteMode> =
-            xml_node.attributes.get("bwMode").map(|val| val.parse()).transpose()?;
+        let black_and_white_mode = xml_node.attributes.get("bwMode").map(|val| val.parse()).transpose()?;
 
-        let background: BackgroundGroup = xml_node
+        let background = xml_node
             .child_nodes
             .iter()
             .find_map(BackgroundGroup::try_from_xml_element)
@@ -895,9 +876,10 @@ impl ApplicationNonVisualDrawingProps {
                 Ok(instance)
             })
             .and_then(|instance| {
-                xml_node.child_nodes.iter().try_fold(
-                    instance,
-                    |mut instance: ApplicationNonVisualDrawingProps, child_node: &XmlNode| {
+                xml_node
+                    .child_nodes
+                    .iter()
+                    .try_fold(instance, |mut instance, child_node| {
                         match child_node.local_name() {
                             "ph" => instance.placeholder = Some(Placeholder::from_xml_element(child_node)?),
                             "custDataLst" => {
@@ -1064,7 +1046,7 @@ impl XsdType for ShapeGroup {
             "cxnSp" => Ok(ShapeGroup::Connector(Box::new(Connector::from_xml_element(xml_node)?))),
             "pic" => Ok(ShapeGroup::Picture(Box::new(Picture::from_xml_element(xml_node)?))),
             "contentPart" => {
-                let rel_id: String = xml_node
+                let rel_id = xml_node
                     .attributes
                     .get("r:id")
                     .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:id"))?
@@ -1142,12 +1124,12 @@ pub struct Shape {
 
 impl Shape {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let use_bg_fill: Option<bool> = xml_node.attributes.get("useBgFill").map(parse_xml_bool).transpose()?;
+        let use_bg_fill = xml_node.attributes.get("useBgFill").map(parse_xml_bool).transpose()?;
 
-        let mut non_visual_props: Option<Box<ShapeNonVisual>> = None;
-        let mut shape_props: Option<Box<ShapeProperties>> = None;
-        let mut shape_style: Option<Box<ShapeStyle>> = None;
-        let mut text_body: Option<TextBody> = None;
+        let mut non_visual_props = None;
+        let mut shape_props = None;
+        let mut shape_style = None;
+        let mut text_body = None;
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
@@ -1159,10 +1141,9 @@ impl Shape {
             }
         }
 
-        let non_visual_props: Box<ShapeNonVisual> =
+        let non_visual_props =
             non_visual_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvSpPr"))?;
-        let shape_props: Box<ShapeProperties> =
-            shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "spPr"))?;
+        let shape_props = shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "spPr"))?;
 
         Ok(Self {
             use_bg_fill,
@@ -1201,9 +1182,9 @@ pub struct ShapeNonVisual {
 
 impl ShapeNonVisual {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let mut drawing_props: Option<Box<NonVisualDrawingProps>> = None;
-        let mut shape_drawing_props: Option<NonVisualDrawingShapeProps> = None;
-        let mut app_props: Option<ApplicationNonVisualDrawingProps> = None;
+        let mut drawing_props = None;
+        let mut shape_drawing_props = None;
+        let mut app_props = None;
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
@@ -1214,12 +1195,10 @@ impl ShapeNonVisual {
             }
         }
 
-        let drawing_props: Box<NonVisualDrawingProps> =
-            drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
-        let shape_drawing_props: NonVisualDrawingShapeProps =
+        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
+        let shape_drawing_props =
             shape_drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvSpPr"))?;
-        let app_props: ApplicationNonVisualDrawingProps =
-            app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
+        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
 
         Ok(Self {
             drawing_props,
@@ -1245,9 +1224,9 @@ pub struct GroupShape {
 
 impl GroupShape {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let mut non_visual_props: Option<Box<GroupShapeNonVisual>> = None;
-        let mut group_shape_props: Option<GroupShapeProperties> = None;
-        let mut shape_array: Vec<ShapeGroup> = Vec::new();
+        let mut non_visual_props = None;
+        let mut group_shape_props = None;
+        let mut shape_array = Vec::new();
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
@@ -1260,9 +1239,9 @@ impl GroupShape {
             }
         }
 
-        let non_visual_props: Box<GroupShapeNonVisual> =
+        let non_visual_props =
             non_visual_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvGrpSpPr"))?;
-        let group_shape_props: GroupShapeProperties =
+        let group_shape_props =
             group_shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "grpSpPr"))?;
 
         Ok(Self {
@@ -1284,13 +1263,12 @@ pub struct GroupShapeNonVisual {
 
 impl GroupShapeNonVisual {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let mut drawing_props: Option<Box<NonVisualDrawingProps>> = None;
-        let mut group_drawing_props: Option<NonVisualGroupDrawingShapeProps> = None;
-        let mut app_props: Option<ApplicationNonVisualDrawingProps> = None;
+        let mut drawing_props = None;
+        let mut group_drawing_props = None;
+        let mut app_props = None;
 
         for child_node in &xml_node.child_nodes {
-            let local_name: &str = child_node.local_name();
-            match local_name {
+            match child_node.local_name() {
                 "cNvPr" => drawing_props = Some(Box::new(NonVisualDrawingProps::from_xml_element(child_node)?)),
                 "cNvGrpSpPr" => {
                     group_drawing_props = Some(NonVisualGroupDrawingShapeProps::from_xml_element(child_node)?)
@@ -1300,12 +1278,10 @@ impl GroupShapeNonVisual {
             }
         }
 
-        let drawing_props: Box<NonVisualDrawingProps> =
-            drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
-        let group_drawing_props: NonVisualGroupDrawingShapeProps =
+        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
+        let group_drawing_props =
             group_drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvGrpSpPr"))?;
-        let app_props: ApplicationNonVisualDrawingProps =
-            app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
+        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
 
         Ok(Self {
             drawing_props,
@@ -1339,15 +1315,15 @@ pub struct GraphicalObjectFrame {
 
 impl GraphicalObjectFrame {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let black_white_mode: Option<BlackWhiteMode> = xml_node
+        let black_white_mode = xml_node
             .attributes
             .get("bwMode")
-            .map(|value: &String| value.parse())
+            .map(|value| value.parse())
             .transpose()?;
 
-        let mut non_visual_props: Option<Box<GraphicalObjectFrameNonVisual>> = None;
-        let mut transform: Option<Box<Transform2D>> = None;
-        let mut graphic: Option<GraphicalObject> = None;
+        let mut non_visual_props = None;
+        let mut transform = None;
+        let mut graphic = None;
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
@@ -1360,12 +1336,10 @@ impl GraphicalObjectFrame {
             }
         }
 
-        let non_visual_props: Box<GraphicalObjectFrameNonVisual> =
+        let non_visual_props =
             non_visual_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvGraphicFramePr"))?;
-        let transform: Box<Transform2D> =
-            transform.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "xfrm"))?;
-        let graphic: GraphicalObject =
-            graphic.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "graphic"))?;
+        let transform = transform.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "xfrm"))?;
+        let graphic = graphic.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "graphic"))?;
 
         Ok(Self {
             black_white_mode,
@@ -1387,9 +1361,9 @@ pub struct GraphicalObjectFrameNonVisual {
 
 impl GraphicalObjectFrameNonVisual {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let mut drawing_props: Option<Box<NonVisualDrawingProps>> = None;
-        let mut graphic_frame_props: Option<NonVisualGraphicFrameProperties> = None;
-        let mut app_props: Option<ApplicationNonVisualDrawingProps> = None;
+        let mut drawing_props = None;
+        let mut graphic_frame_props = None;
+        let mut app_props = None;
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
@@ -1402,12 +1376,10 @@ impl GraphicalObjectFrameNonVisual {
             }
         }
 
-        let drawing_props: Box<NonVisualDrawingProps> =
-            drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
-        let graphic_frame_props: NonVisualGraphicFrameProperties = graphic_frame_props
+        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
+        let graphic_frame_props = graphic_frame_props
             .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvGraphicFramePr"))?;
-        let app_props: ApplicationNonVisualDrawingProps =
-            app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
+        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
 
         Ok(Self {
             drawing_props,
@@ -1457,9 +1429,9 @@ pub struct Connector {
 
 impl Connector {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let mut non_visual_props: Option<Box<ConnectorNonVisual>> = None;
-        let mut shape_props: Option<Box<ShapeProperties>> = None;
-        let mut shape_style: Option<Box<ShapeStyle>> = None;
+        let mut non_visual_props = None;
+        let mut shape_props = None;
+        let mut shape_style = None;
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
@@ -1470,10 +1442,9 @@ impl Connector {
             }
         }
 
-        let non_visual_props: Box<ConnectorNonVisual> =
+        let non_visual_props =
             non_visual_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvCxnSpPr"))?;
-        let shape_props: Box<ShapeProperties> =
-            shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvCxnSpPr"))?;
+        let shape_props = shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvCxnSpPr"))?;
 
         Ok(Self {
             non_visual_props,
@@ -1494,9 +1465,9 @@ pub struct ConnectorNonVisual {
 
 impl ConnectorNonVisual {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let mut drawing_props: Option<Box<NonVisualDrawingProps>> = None;
-        let mut connector_props: Option<NonVisualConnectorProperties> = None;
-        let mut app_props: Option<ApplicationNonVisualDrawingProps> = None;
+        let mut drawing_props = None;
+        let mut connector_props = None;
+        let mut app_props = None;
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
@@ -1507,12 +1478,10 @@ impl ConnectorNonVisual {
             }
         }
 
-        let drawing_props: Box<NonVisualDrawingProps> =
-            drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
-        let connector_props: NonVisualConnectorProperties =
+        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
+        let connector_props =
             connector_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvCxnSpPr"))?;
-        let app_props: ApplicationNonVisualDrawingProps =
-            app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
+        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
 
         Ok(Self {
             drawing_props,
@@ -1572,10 +1541,10 @@ pub struct Picture {
 
 impl Picture {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let mut non_visual_props: Option<Box<PictureNonVisual>> = None;
-        let mut blip_fill: Option<Box<BlipFillProperties>> = None;
-        let mut shape_props: Option<Box<ShapeProperties>> = None;
-        let mut shape_style: Option<Box<ShapeStyle>> = None;
+        let mut non_visual_props = None;
+        let mut blip_fill = None;
+        let mut shape_props = None;
+        let mut shape_style = None;
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
@@ -1587,12 +1556,10 @@ impl Picture {
             }
         }
 
-        let non_visual_props: Box<PictureNonVisual> =
+        let non_visual_props =
             non_visual_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPicPr"))?;
-        let blip_fill: Box<BlipFillProperties> =
-            blip_fill.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "blipFill"))?;
-        let shape_props: Box<ShapeProperties> =
-            shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "spPr"))?;
+        let blip_fill = blip_fill.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "blipFill"))?;
+        let shape_props = shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "spPr"))?;
 
         Ok(Self {
             non_visual_props,
@@ -1630,9 +1597,9 @@ pub struct PictureNonVisual {
 
 impl PictureNonVisual {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let mut drawing_props: Option<Box<NonVisualDrawingProps>> = None;
-        let mut picture_props: Option<NonVisualPictureProperties> = None;
-        let mut app_props: Option<ApplicationNonVisualDrawingProps> = None;
+        let mut drawing_props = None;
+        let mut picture_props = None;
+        let mut app_props = None;
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
@@ -1643,12 +1610,10 @@ impl PictureNonVisual {
             }
         }
 
-        let drawing_props: Box<NonVisualDrawingProps> =
-            drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
-        let picture_props: NonVisualPictureProperties =
+        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
+        let picture_props =
             picture_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPicPr"))?;
-        let app_props: ApplicationNonVisualDrawingProps =
-            app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
+        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
 
         Ok(Self {
             drawing_props,
@@ -1731,11 +1696,11 @@ pub struct CommonSlideData {
 
 impl CommonSlideData {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let name: Option<String> = xml_node.attributes.get("name").cloned();
-        let mut background: Option<Box<Background>> = None;
-        let mut shape_tree: Option<Box<GroupShape>> = None;
-        let mut customer_data_list: Option<CustomerDataList> = None;
-        let mut control_list: Option<Vec<Control>> = None;
+        let name = xml_node.attributes.get("name").cloned();
+        let mut background = None;
+        let mut shape_tree = None;
+        let mut customer_data_list = None;
+        let mut control_list = None;
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
@@ -1822,11 +1787,7 @@ pub struct OrientationTransition {
 
 impl OrientationTransition {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let direction: Option<Direction> = xml_node
-            .attributes
-            .get("dir")
-            .map(|value: &String| value.parse())
-            .transpose()?;
+        let direction = xml_node.attributes.get("dir").map(|value| value.parse()).transpose()?;
 
         Ok(Self { direction })
     }
@@ -1842,11 +1803,7 @@ pub struct EightDirectionTransition {
 
 impl EightDirectionTransition {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let direction: Option<TransitionEightDirectionType> = xml_node
-            .attributes
-            .get("dir")
-            .map(|value: &String| value.parse())
-            .transpose()?;
+        let direction = xml_node.attributes.get("dir").map(|value| value.parse()).transpose()?;
 
         Ok(Self { direction })
     }
@@ -1863,7 +1820,7 @@ pub struct OptionalBlackTransition {
 
 impl OptionalBlackTransition {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let through_black: Option<bool> = xml_node.attributes.get("thruBlk").map(parse_xml_bool).transpose()?;
+        let through_black = xml_node.attributes.get("thruBlk").map(parse_xml_bool).transpose()?;
 
         Ok(Self { through_black })
     }
@@ -1879,8 +1836,7 @@ pub struct SideDirectionTransition {
 
 impl SideDirectionTransition {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let direction: Option<TransitionSideDirectionType> =
-            xml_node.attributes.get("dir").map(|value| value.parse()).transpose()?;
+        let direction = xml_node.attributes.get("dir").map(|value| value.parse()).transpose()?;
 
         Ok(Self { direction })
     }
@@ -1925,11 +1881,7 @@ pub struct CornerDirectionTransition {
 
 impl CornerDirectionTransition {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let direction: Option<TransitionCornerDirectionType> = xml_node
-            .attributes
-            .get("dir")
-            .map(|value: &String| value.parse())
-            .transpose()?;
+        let direction = xml_node.attributes.get("dir").map(|value| value.parse()).transpose()?;
 
         Ok(Self { direction })
     }
@@ -1945,7 +1897,7 @@ pub struct WheelTransition {
 
 impl WheelTransition {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let spokes: Option<u32> = xml_node
+        let spokes = xml_node
             .attributes
             .get("spokes")
             .map(|value| value.parse())
@@ -1965,11 +1917,7 @@ pub struct InOutTransition {
 
 impl InOutTransition {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let direction: Option<TransitionInOutDirectionType> = xml_node
-            .attributes
-            .get("dir")
-            .map(|value: &String| value.parse())
-            .transpose()?;
+        let direction = xml_node.attributes.get("dir").map(|value| value.parse()).transpose()?;
 
         Ok(Self { direction })
     }
@@ -2338,7 +2286,7 @@ pub struct TransitionStartSoundAction {
 
 impl TransitionStartSoundAction {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
-        let is_looping: Option<bool> = xml_node.attributes.get("loop").map(parse_xml_bool).transpose()?;
+        let is_looping = xml_node.attributes.get("loop").map(parse_xml_bool).transpose()?;
 
         let sound_file = xml_node
             .child_nodes
@@ -2461,7 +2409,7 @@ impl SlideTransition {
                 xml_node
                     .child_nodes
                     .iter()
-                    .try_fold(instance, |mut instance: SlideTransition, child_node: &XmlNode| {
+                    .try_fold(instance, |mut instance, child_node| {
                         match child_node.local_name() {
                             "sndAc" => {
                                 instance.sound_action = Some(TransitionSoundAction::from_xml_element(child_node)?)
@@ -2502,7 +2450,7 @@ pub struct SlideTiming {
     /// <p:bldLst>
     ///   <p:bldGraphic spid="1" grpId="0">
     ///     <p:bldSub>
-    ///       <a:bldChart ="category"/>
+    ///       <a:bldChart bld="category"/>
     ///     </p:bldSub>
     ///   </p:bldGraphic>
     /// </p:bldLst>
@@ -2521,21 +2469,21 @@ impl SlideTiming {
                         let vec = child_node
                             .child_nodes
                             .iter()
-                            .filter(|tn_node: &&XmlNode| tn_node.local_name() == "tn")
+                            .filter(|tn_node| tn_node.local_name() == "tn")
                             .map(TimeNodeGroup::from_xml_element)
                             .collect::<Result<Vec<_>>>()?;
 
                         instance.time_node_list = if !vec.is_empty() {
                             Some(vec)
                         } else {
-                            let warning: MissingChildNodeError =
-                                MissingChildNodeError::new(child_node.name.clone(), "tn");
-                            warn!("{}", warning);
-                            None
+                            return Err(Box::<dyn Error>::from(MissingChildNodeError::new(
+                                child_node.name.clone(),
+                                "tn",
+                            )));
                         }
                     }
                     "bldLst" => {
-                        let vec: Vec<Build> = child_node
+                        let vec = child_node
                             .child_nodes
                             .iter()
                             .filter(|bld_node| bld_node.local_name() == "bld")
@@ -2545,10 +2493,10 @@ impl SlideTiming {
                         instance.build_list = if !vec.is_empty() {
                             Some(vec)
                         } else {
-                            let warning: MissingChildNodeError =
-                                MissingChildNodeError::new(child_node.name.clone(), "bld");
-                            warn!("{}", warning);
-                            None
+                            return Err(Box::<dyn Error>::from(MissingChildNodeError::new(
+                                child_node.name.clone(),
+                                "bld",
+                            )));
                         }
                     }
                     _ => (),

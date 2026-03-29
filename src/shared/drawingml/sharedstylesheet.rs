@@ -71,67 +71,34 @@ impl ColorMapping {
 
         for (attr, value) in &xml_node.attributes {
             match attr.as_str() {
-                "bg1" => {
-                    background1 = Some(value.parse()?);
-                }
-                "tx1" => {
-                    text1 = Some(value.parse()?);
-                }
-                "bg2" => {
-                    background2 = Some(value.parse()?);
-                }
-                "tx2" => {
-                    text2 = Some(value.parse()?);
-                }
-                "accent1" => {
-                    accent1 = Some(value.parse()?);
-                }
-                "accent2" => {
-                    accent2 = Some(value.parse()?);
-                }
-                "accent3" => {
-                    accent3 = Some(value.parse()?);
-                }
-                "accent4" => {
-                    accent4 = Some(value.parse()?);
-                }
-                "accent5" => {
-                    accent5 = Some(value.parse()?);
-                }
-                "accent6" => {
-                    accent6 = Some(value.parse()?);
-                }
-                "hlink" => {
-                    hyperlink = Some(value.parse()?);
-                }
-                "folHlink" => {
-                    followed_hyperlink = Some(value.parse()?);
-                }
+                "bg1" => background1 = Some(value.parse()?),
+                "tx1" => text1 = Some(value.parse()?),
+                "bg2" => background2 = Some(value.parse()?),
+                "tx2" => text2 = Some(value.parse()?),
+                "accent1" => accent1 = Some(value.parse()?),
+                "accent2" => accent2 = Some(value.parse()?),
+                "accent3" => accent3 = Some(value.parse()?),
+                "accent4" => accent4 = Some(value.parse()?),
+                "accent5" => accent5 = Some(value.parse()?),
+                "accent6" => accent6 = Some(value.parse()?),
+                "hlink" => hyperlink = Some(value.parse()?),
+                "folHlink" => followed_hyperlink = Some(value.parse()?),
                 _ => (),
             }
         }
 
-        let background1: ColorSchemeIndex =
-            background1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "bg1"))?;
-        let text1: ColorSchemeIndex = text1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "tx1"))?;
-        let background2: ColorSchemeIndex =
-            background2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "bg2"))?;
-        let text2: ColorSchemeIndex = text2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "tx2"))?;
-        let accent1: ColorSchemeIndex =
-            accent1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent1"))?;
-        let accent2: ColorSchemeIndex =
-            accent2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent2"))?;
-        let accent3: ColorSchemeIndex =
-            accent3.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent3"))?;
-        let accent4: ColorSchemeIndex =
-            accent4.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent4"))?;
-        let accent5: ColorSchemeIndex =
-            accent5.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent5"))?;
-        let accent6: ColorSchemeIndex =
-            accent6.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent6"))?;
-        let hyperlink: ColorSchemeIndex =
-            hyperlink.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "hlink"))?;
-        let followed_hyperlink: ColorSchemeIndex =
+        let background1 = background1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "bg1"))?;
+        let text1 = text1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "tx1"))?;
+        let background2 = background2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "bg2"))?;
+        let text2 = text2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "tx2"))?;
+        let accent1 = accent1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent1"))?;
+        let accent2 = accent2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent2"))?;
+        let accent3 = accent3.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent3"))?;
+        let accent4 = accent4.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent4"))?;
+        let accent5 = accent5.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent5"))?;
+        let accent6 = accent6.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent6"))?;
+        let hyperlink = hyperlink.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "hlink"))?;
+        let followed_hyperlink =
             followed_hyperlink.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "folHlink"))?;
 
         Ok(Self {
@@ -235,42 +202,18 @@ impl ColorScheme {
                 .ok_or_else(|| MissingChildNodeError::new(child_node.name.clone(), "EG_Color"))?;
 
             match child_node.local_name() {
-                "dk1" => {
-                    dk1 = Some(color);
-                }
-                "lt1" => {
-                    lt1 = Some(color);
-                }
-                "dk2" => {
-                    dk2 = Some(color);
-                }
-                "lt2" => {
-                    lt2 = Some(color);
-                }
-                "accent1" => {
-                    accent1 = Some(color);
-                }
-                "accent2" => {
-                    accent2 = Some(color);
-                }
-                "accent3" => {
-                    accent3 = Some(color);
-                }
-                "accent4" => {
-                    accent4 = Some(color);
-                }
-                "accent5" => {
-                    accent5 = Some(color);
-                }
-                "accent6" => {
-                    accent6 = Some(color);
-                }
-                "hlink" => {
-                    hyperlink = Some(color);
-                }
-                "folHlink" => {
-                    follow_hyperlink = Some(color);
-                }
+                "dk1" => dk1 = Some(color),
+                "lt1" => lt1 = Some(color),
+                "dk2" => dk2 = Some(color),
+                "lt2" => lt2 = Some(color),
+                "accent1" => accent1 = Some(color),
+                "accent2" => accent2 = Some(color),
+                "accent3" => accent3 = Some(color),
+                "accent4" => accent4 = Some(color),
+                "accent5" => accent5 = Some(color),
+                "accent6" => accent6 = Some(color),
+                "hlink" => hyperlink = Some(color),
+                "folHlink" => follow_hyperlink = Some(color),
                 _ => (),
             }
         }
@@ -399,12 +342,8 @@ impl ColorSchemeAndMapping {
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
-                "clrScheme" => {
-                    color_scheme = Some(Box::new(ColorScheme::from_xml_element(child_node)?));
-                }
-                "clrMap" => {
-                    color_mapping = Some(Box::new(ColorMapping::from_xml_element(child_node)?));
-                }
+                "clrScheme" => color_scheme = Some(Box::new(ColorScheme::from_xml_element(child_node)?)),
+                "clrMap" => color_mapping = Some(Box::new(ColorMapping::from_xml_element(child_node)?)),
                 _ => (),
             }
         }
@@ -538,15 +477,13 @@ impl ObjectStyleDefaults {
                 match child_node.local_name() {
                     "spDef" => {
                         instance.shape_definition =
-                            Some(Box::new(DefaultShapeDefinition::from_xml_element(child_node)?));
+                            Some(Box::new(DefaultShapeDefinition::from_xml_element(child_node)?))
                     }
                     "lnDef" => {
-                        instance.line_definition =
-                            Some(Box::new(DefaultShapeDefinition::from_xml_element(child_node)?));
+                        instance.line_definition = Some(Box::new(DefaultShapeDefinition::from_xml_element(child_node)?))
                     }
                     "txDef" => {
-                        instance.text_definition =
-                            Some(Box::new(DefaultShapeDefinition::from_xml_element(child_node)?));
+                        instance.text_definition = Some(Box::new(DefaultShapeDefinition::from_xml_element(child_node)?))
                     }
                     _ => (),
                 }
@@ -668,29 +605,28 @@ pub struct OfficeStyleSheet {
 
 impl OfficeStyleSheet {
     pub fn from_zip_file(zip_file: &mut ZipFile<&File>) -> Result<Self> {
-        let mut xml_string: String = String::new();
+        let mut xml_string = String::new();
         zip_file.read_to_string(&mut xml_string)?;
-        let xml_node: XmlNode = XmlNode::from_str(xml_string.as_str())?;
+        let xml_node = XmlNode::from_str(xml_string.as_str())?;
 
         Self::from_xml_element(&xml_node)
     }
 
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
         trace!("parsing OfficeStyleSheet '{}'", xml_node.name);
-        let name: Option<String> = xml_node.attributes.get("name").cloned();
+        let name = xml_node.attributes.get("name").cloned();
 
-        let mut theme_elements: Option<Box<BaseStyles>> = None;
-        let mut object_defaults: Option<ObjectStyleDefaults> = None;
-        let mut extra_color_scheme_list: Option<Vec<ColorSchemeAndMapping>> = None;
-        let mut custom_color_list: Option<Vec<CustomColor>> = None;
-        let mut theme_override: Option<Box<BaseStyles>> = None;
+        let mut theme_elements = None;
+        let mut object_defaults = None;
+        let mut extra_color_scheme_list = None;
+        let mut custom_color_list = None;
+        let mut theme_override = None;
 
         if xml_node.local_name() == "themeOverride" {
             theme_override = Some(Box::new(BaseStyles::from_xml_element(&xml_node)?));
         } else {
             for child_node in &xml_node.child_nodes {
-                let local_name: &str = child_node.local_name();
-                match local_name {
+                match child_node.local_name() {
                     "themeElements" => {
                         theme_elements = Some(Box::new(BaseStyles::from_xml_element(child_node)?));
                     }
@@ -766,30 +702,23 @@ pub struct BaseStyles {
 impl BaseStyles {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
         trace!("parsing BaseStyles '{}'", xml_node.name);
-        let mut color_scheme: Option<Box<ColorScheme>> = None;
-        let mut font_scheme: Option<FontScheme> = None;
-        let mut format_scheme: Option<Box<StyleMatrix>> = None;
+        let mut color_scheme = None;
+        let mut font_scheme = None;
+        let mut format_scheme = None;
 
         for child_node in &xml_node.child_nodes {
             match child_node.local_name() {
-                "clrScheme" => {
-                    color_scheme = Some(Box::new(ColorScheme::from_xml_element(child_node)?));
-                }
-                "fontScheme" => {
-                    font_scheme = Some(FontScheme::from_xml_element(child_node)?);
-                }
-                "fmtScheme" => {
-                    format_scheme = Some(Box::new(StyleMatrix::from_xml_element(child_node)?));
-                }
+                "clrScheme" => color_scheme = Some(Box::new(ColorScheme::from_xml_element(child_node)?)),
+                "fontScheme" => font_scheme = Some(FontScheme::from_xml_element(child_node)?),
+                "fmtScheme" => format_scheme = Some(Box::new(StyleMatrix::from_xml_element(child_node)?)),
                 _ => (),
             }
         }
 
-        let color_scheme: Box<ColorScheme> =
+        let color_scheme =
             color_scheme.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "clrScheme"))?;
-        let font_scheme: FontScheme =
-            font_scheme.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "fontScheme"))?;
-        let format_scheme: Box<StyleMatrix> =
+        let font_scheme = font_scheme.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "fontScheme"))?;
+        let format_scheme =
             format_scheme.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "fmtScheme"))?;
 
         Ok(Self {
