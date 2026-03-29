@@ -12,7 +12,7 @@ use crate::{
             Angle, DrawingElementId, FixedPercentage, Percentage, PositiveFixedPercentage, PositivePercentage, ShapeId,
         },
     },
-    xml::{parse_xml_bool, XmlNode},
+    xml::{XmlNode, parse_xml_bool},
     xsdtypes::{XsdChoice, XsdType},
 };
 use std::{error::Error, ops::Div, str::FromStr};
@@ -2827,8 +2827,6 @@ impl TLTimeAnimateValueList {
     }
 }
 
-
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum TLTimeAnimateValueTime {
     Percentage(PositiveFixedPercentage),
@@ -2849,15 +2847,11 @@ impl FromStr for TLTimeAnimateValueTime {
                         .map_err(|_| Self::Err::new("TLTimeAnimateValueTime"))?
                         .div(100.0)
                 } else {
-                    s.parse::<f32>()
-                    .map_err(|_| Self::Err::new("TLTimeAnimateValueTime"))?
+                    s.parse::<f32>().map_err(|_| Self::Err::new("TLTimeAnimateValueTime"))?
                 };
 
                 Ok(TLTimeAnimateValueTime::Percentage(perc))
             }
-            // _ => {}Ok(TLTimeAnimateValueTime::Percentage(
-            //     s.parse().map_err(|_| Self::Err::new("TLTimeAnimateValueTime"))?,
-            // )),
         }
     }
 }
@@ -4149,15 +4143,11 @@ mod tests {
 
     #[test]
     pub fn test_tl_common_behavior_data_from_xml() {
-        let xml: String = TLCommonBehaviorData::test_xml("tlCommonBehaviorData");
-        // TODO: update this?
-        let element: &XmlNode = &XmlNode::from_str(&xml).unwrap();
-        let instance_xml: TLCommonBehaviorData = 
-            TLCommonBehaviorData::from_xml_element(&element)
-            .unwrap();
-        let instance_test: TLCommonBehaviorData = TLCommonBehaviorData::test_instance();
-        
-        assert_eq!(instance_xml, instance_test);
+        let xml = TLCommonBehaviorData::test_xml("tlCommonBehaviorData");
+        assert_eq!(
+            TLCommonBehaviorData::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
+            TLCommonBehaviorData::test_instance()
+        );
     }
 
     impl TLCommonMediaNodeData {
@@ -4213,7 +4203,7 @@ mod tests {
 
     #[test]
     pub fn test_tl_point_from_xml() {
-        let xml: String = TLPoint::test_xml("tlPoint");
+        let xml = TLPoint::test_xml("tlPoint");
         assert_eq!(
             TLPoint::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
             TLPoint::test_instance(),
@@ -4245,7 +4235,7 @@ mod tests {
 
     #[test]
     pub fn test_tl_time_condition_from_xml() {
-        let xml: String = TLTimeCondition::test_xml("tlTimeCondition");
+        let xml = TLTimeCondition::test_xml("tlTimeCondition");
         assert_eq!(
             TLTimeCondition::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
             TLTimeCondition::test_instance(),
@@ -4268,7 +4258,7 @@ mod tests {
 
     #[test]
     pub fn test_tl_time_condition_list_from_xml() {
-        let xml: String = TLTimeConditionList::test_xml("tlTimeConditionList");
+        let xml = TLTimeConditionList::test_xml("tlTimeConditionList");
         assert_eq!(
             TLTimeConditionList::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
             TLTimeConditionList::test_instance(),
@@ -4384,7 +4374,7 @@ mod tests {
 
     #[test]
     pub fn test_tl_common_time_node_data_from_xml() {
-        let xml: String = TLCommonTimeNodeData::test_xml("tlCommonTimeNodeData");
+        let xml = TLCommonTimeNodeData::test_xml("tlCommonTimeNodeData");
         assert_eq!(
             TLCommonTimeNodeData::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
             TLCommonTimeNodeData::test_instance(),
@@ -4420,7 +4410,7 @@ mod tests {
 
     #[test]
     pub fn test_tl_time_node_sequence_from_xml() {
-        let xml: String = TLTimeNodeSequence::test_xml("tlTimeNodeSequence");
+        let xml = TLTimeNodeSequence::test_xml("tlTimeNodeSequence");
         assert_eq!(
             TLTimeNodeSequence::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
             TLTimeNodeSequence::test_instance(),
@@ -4448,7 +4438,7 @@ mod tests {
 
     #[test]
     pub fn test_tl_iterate_data_from_xml() {
-        let xml: String = TLIterateData::test_xml("tlIterateData");
+        let xml = TLIterateData::test_xml("tlIterateData");
         assert_eq!(
             TLIterateData::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
             TLIterateData::test_instance(),
@@ -4474,7 +4464,7 @@ mod tests {
 
     #[test]
     pub fn test_tl_template_from_xml() {
-        let xml: String = TLTemplate::test_xml("tlTemplate");
+        let xml = TLTemplate::test_xml("tlTemplate");
         assert_eq!(
             TLTemplate::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
             TLTemplate::test_instance(),
@@ -4497,7 +4487,7 @@ mod tests {
 
     #[test]
     pub fn test_tl_template_list_from_xml() {
-        let xml: String = TLTemplateList::test_xml("tlTemplateList");
+        let xml = TLTemplateList::test_xml("tlTemplateList");
         assert_eq!(
             TLTemplateList::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
             TLTemplateList::test_instance(),
@@ -4544,7 +4534,7 @@ mod tests {
 
     #[test]
     pub fn test_tl_build_paragraph_from_xml() {
-        let xml: String = TLBuildParagraph::test_xml("tlBuildParagraph");
+        let xml = TLBuildParagraph::test_xml("tlBuildParagraph");
         assert_eq!(
             TLBuildParagraph::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
             TLBuildParagraph::test_instance(),
@@ -4570,7 +4560,7 @@ mod tests {
 
     #[test]
     pub fn test_tl_build_diagram_from_xml() {
-        let xml: String = TLBuildDiagram::test_xml("tlBuildDiagram");
+        let xml = TLBuildDiagram::test_xml("tlBuildDiagram");
         assert_eq!(
             TLBuildDiagram::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
             TLBuildDiagram::test_instance(),
@@ -4597,7 +4587,7 @@ mod tests {
 
     #[test]
     pub fn test_tl_ole_build_chart_from_xml() {
-        let xml: String = TLOleBuildChart::test_xml("tlOleBuildChart");
+        let xml = TLOleBuildChart::test_xml("tlOleBuildChart");
         assert_eq!(
             TLOleBuildChart::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
             TLOleBuildChart::test_instance(),
@@ -4625,7 +4615,7 @@ mod tests {
 
     #[test]
     pub fn test_tl_graphical_object_build_from_xml() {
-        let xml: String = TLGraphicalObjectBuild::test_xml("tlGraphicalObjectBuild");
+        let xml = TLGraphicalObjectBuild::test_xml("tlGraphicalObjectBuild");
         assert_eq!(
             TLGraphicalObjectBuild::from_xml_element(&XmlNode::from_str(&xml).unwrap()).unwrap(),
             TLGraphicalObjectBuild::test_instance(),
@@ -4658,21 +4648,21 @@ mod tests {
 
         pub fn test_instance() -> Self {
             let members: Vec<TLTimeAnimateValue> = vec![
-                TLTimeAnimateValue{
+                TLTimeAnimateValue {
                     time: Some(TLTimeAnimateValueTime::Percentage(0.1)),
                     formula: Some(r"\#ppt_y-sin(pi*$)/3".to_string()),
-                    value: Some(TLAnimVariant::Float(0.5))
+                    value: Some(TLAnimVariant::Float(0.5)),
                 },
-                TLTimeAnimateValue{
+                TLTimeAnimateValue {
                     time: Some(TLTimeAnimateValueTime::Percentage(1.0)),
                     formula: None,
-                    value: Some(TLAnimVariant::Float(1.0))
+                    value: Some(TLAnimVariant::Float(1.0)),
                 },
-                TLTimeAnimateValue{
+                TLTimeAnimateValue {
                     time: Some(TLTimeAnimateValueTime::Percentage(0.2)),
                     formula: None,
-                    value: Some(TLAnimVariant::String(r"\#ppt_y".to_string()))
-                }
+                    value: Some(TLAnimVariant::String(r"\#ppt_y".to_string())),
+                },
             ];
             Self(members)
         }
@@ -4680,26 +4670,25 @@ mod tests {
 
     #[test]
     pub fn test_tl_time_animate_value_list_from_xml() {
-        let xml: String = TLTimeAnimateValueList::test_xml("tavLst");
+        let xml = TLTimeAnimateValueList::test_xml("tavLst");
         let instance_target: TLTimeAnimateValueList = TLTimeAnimateValueList::test_instance();
 
         let element: &XmlNode = &XmlNode::from_str(&xml).unwrap();
-        let instance_xml: TLTimeAnimateValueList = 
-            TLTimeAnimateValueList::from_xml_element(&element)
-            .unwrap();
+        let instance_xml: TLTimeAnimateValueList = TLTimeAnimateValueList::from_xml_element(&element).unwrap();
 
         assert_eq!(instance_xml, instance_target);
     }
 
     impl TLAnimateBehavior {
         pub fn test_xml(node_name: &'static str) -> String {
-            format!(r#"<{node_name} by="Example" from="Example" to="Example" calcmode="fmla" valueType="str">
+            format!(
+                r#"<{node_name} by="Example" from="Example" to="Example" calcmode="fmla" valueType="str">
                 {}
                 {}
             </{node_name}>"#,
                 TLCommonBehaviorData::test_xml("cBhvr"),
                 TLTimeAnimateValueList::test_xml("tavLst"),
-                node_name=node_name,
+                node_name = node_name,
             )
         }
 

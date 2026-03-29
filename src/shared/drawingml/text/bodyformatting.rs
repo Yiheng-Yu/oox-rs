@@ -7,7 +7,7 @@ use crate::{
             TextHorizontalOverflowType, TextSpacingPercent, TextVertOverflowType, TextVerticalType, TextWrappingType,
         },
     },
-    xml::{parse_xml_bool, XmlNode},
+    xml::{XmlNode, parse_xml_bool},
     xsdtypes::{XsdChoice, XsdType},
 };
 
