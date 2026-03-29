@@ -21,6 +21,8 @@ use crate::{
     xml::{XmlNode, parse_xml_bool},
     xsdtypes::{XsdChoice, XsdType},
 };
+use log::{info, warn};
+use std::fs::File;
 use std::{error::Error, io::Read, str::FromStr};
 use zip::read::ZipFile;
 
@@ -609,9 +611,7 @@ impl Slide {
     pub fn from_zip_file(zip_file: &mut ZipFile<&std::fs::File>) -> Result<Self> {
         let mut xml_string = String::new();
         zip_file.read_to_string(&mut xml_string)?;
-
         let node = XmlNode::from_str(xml_string.as_str()).expect("Error parsing XML string!");
-
         match Self::from_xml_element(&node) {
             Ok(slide) => Ok(slide),
             Err(err) => return Err(err),
@@ -892,7 +892,8 @@ impl ApplicationNonVisualDrawingProps {
                         }
 
                         Ok(instance)
-                    })
+                    },
+                )
             })
     }
 }
