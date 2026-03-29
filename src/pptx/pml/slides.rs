@@ -21,8 +21,6 @@ use crate::{
     xml::{XmlNode, parse_xml_bool},
     xsdtypes::{XsdChoice, XsdType},
 };
-use log::{info, warn};
-use std::fs::File;
 use std::{error::Error, io::Read, str::FromStr};
 use zip::read::ZipFile;
 
@@ -892,8 +890,7 @@ impl ApplicationNonVisualDrawingProps {
                         }
 
                         Ok(instance)
-                    },
-                )
+                    })
             })
     }
 }

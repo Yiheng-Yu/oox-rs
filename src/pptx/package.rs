@@ -58,7 +58,6 @@ impl Package {
                         continue;
                     }
 
-
                     info!("parsing theme file: {}", zip_file.name());
                     theme_map.insert(file_path, Box::new(OfficeStyleSheet::from_zip_file(&mut zip_file)?));
                 }
