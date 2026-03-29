@@ -3,4 +3,5 @@
 **/target/**
 Cargo.lock
 .debug/**
-.vscode/
+.vscode/**
+*.code-workspace
