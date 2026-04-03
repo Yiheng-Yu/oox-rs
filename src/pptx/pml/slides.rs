@@ -609,7 +609,7 @@ impl Slide {
     pub fn from_zip_file(zip_file: &mut ZipFile<&std::fs::File>) -> Result<Self> {
         let mut xml_string = String::new();
         zip_file.read_to_string(&mut xml_string)?;
-        let node = XmlNode::from_str(xml_string.as_str()).expect("Error parsing XML string!");
+        let node = XmlNode::from_str(xml_string.as_str())?;
         match Self::from_xml_element(&node) {
             Ok(slide) => Ok(slide),
             Err(err) => return Err(err),

@@ -46,14 +46,14 @@ impl XmlNode {
         }
     }
 
-    fn from_quick_xml_element(xml_element: &BytesStart<'_>) -> Result<Self, ::std::str::Utf8Error> {
+    fn from_quick_xml_element(xml_element: &BytesStart<'_>) -> Result<Self, Box<dyn std::error::Error>> {
         let name_string = std::str::from_utf8(xml_element.as_ref())?;
-        let name_pattern = Regex::new(r"^(?P<name>[^\s]+)").unwrap();
+        let name_pattern = Regex::new(r"^(?P<name>[^\s]+)")?;
         let name = name_pattern
             .captures(&name_string)
-            .expect("Regex match failed")
+            .ok_or("Error capturing XML tag regex")?
             .name("name")
-            .expect("Unable to find match")
+            .ok_or("Could not find capture group")?
             .as_str()
             .to_string();
 
@@ -74,7 +74,7 @@ impl XmlNode {
         xml_node: &mut Self,
         xml_element: &BytesStart<'_>,
         xml_reader: &mut Reader<&[u8]>,
-    ) -> Result<Vec<Self>, ::std::str::Utf8Error> {
+    ) -> Result<Vec<Self>, Box<dyn std::error::Error>> {
         let mut child_nodes = Vec::new();
         loop {
             match xml_reader.read_event() {
@@ -84,7 +84,7 @@ impl XmlNode {
                     child_nodes.push(node);
                 }
                 Ok(Event::Text(text)) => {
-                    xml_node.text = Some(text.decode().expect("Error decoding xml content").to_string());
+                    xml_node.text = Some(text.decode()?.to_string());
                 }
                 Ok(Event::Empty(ref element)) => {
                     let node = Self::from_quick_xml_element(element)?;

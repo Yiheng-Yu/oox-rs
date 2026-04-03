@@ -156,8 +156,7 @@ impl<'a> Iterator for Slides<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         for i in self.current_page_num..=self.slide_map.len() {
-            let opt_slide: Option<&Box<Slide>> =
-                self.slide_map.get(&PathBuf::from(format!("ppt/slides/slide{}.xml", i)));
+            let opt_slide = self.slide_map.get(&PathBuf::from(format!("ppt/slides/slide{}.xml", i)));
             self.current_page_num += 1;
             if let Some(slide) = opt_slide {
                 return Some(slide);

@@ -15,7 +15,7 @@ use crate::{
     xml::{XmlNode, parse_xml_bool},
     xsdtypes::{XsdChoice, XsdType},
 };
-use std::{error::Error, ops::Div, str::FromStr};
+use std::{error::Error, str::FromStr};
 
 pub type Result<T> = ::std::result::Result<T, Box<dyn Error>>;
 
@@ -2784,7 +2784,7 @@ impl TLTimeAnimateValue {
             .iter()
             .try_fold(Default::default(), |mut instance: Self, (attr, value)| {
                 match attr.as_ref() {
-                    "tm" => instance.time = Some(TLTimeAnimateValueTime::from_str(value).unwrap()),
+                    "tm" => instance.time = Some(value.parse()?),
                     "fmla" => instance.formula = Some(value.clone()),
                     _ => (),
                 }
@@ -2840,17 +2840,16 @@ impl FromStr for TLTimeAnimateValueTime {
         match s {
             "indefinite" => Ok(TLTimeAnimateValueTime::Indefinite),
             _ => {
-                let perc: f32 = if s.ends_with("%") {
-                    s.strip_suffix("%")
-                        .expect("Error parsing percentages")
-                        .parse::<f32>()
-                        .map_err(|_| Self::Err::new("TLTimeAnimateValueTime"))?
-                        .div(100.0)
-                } else {
-                    s.parse::<f32>().map_err(|_| Self::Err::new("TLTimeAnimateValueTime"))?
+                let (num_str, divisor) = match s.strip_suffix('%') {
+                    Some(stripped) => (stripped, 100.0),
+                    None => (s, 1.0),
                 };
 
-                Ok(TLTimeAnimateValueTime::Percentage(perc))
+                let val = num_str
+                    .parse::<f32>()
+                    .map_err(|_| Self::Err::new("TLTimeAnimateValueTime"))?;
+
+                Ok(TLTimeAnimateValueTime::Percentage(val / divisor))
             }
         }
     }
