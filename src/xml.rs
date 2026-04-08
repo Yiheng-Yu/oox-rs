@@ -7,10 +7,10 @@ use regex::Regex;
 use std::{
     collections::HashMap,
     fmt::{Display, Formatter},
-    io::Read,
     fs::File,
+    io::Read,
     str::FromStr,
-    sync::LazyLock
+    sync::LazyLock,
 };
 use zip::read::ZipFile;
 
@@ -40,10 +40,11 @@ impl XmlNode {
     }
 
     pub fn local_name(&self) -> &str {
-        static PATTERN_LOCAL_NAME: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[A-Za-z]+:(?P<local_name>[A-Za-z0-9]+)").unwrap());  
-        match PATTERN_LOCAL_NAME.captures(&self.name) {  
-            Some(capture) => capture.name("local_name").unwrap().as_str(),  
-            None => &self.name, 
+        static PATTERN_LOCAL_NAME: LazyLock<Regex> =
+            LazyLock::new(|| Regex::new(r"^[A-Za-z]+:(?P<local_name>[A-Za-z0-9]+)").unwrap());
+        match PATTERN_LOCAL_NAME.captures(&self.name) {
+            Some(capture) => capture.name("local_name").unwrap().as_str(),
+            None => &self.name,
         }
     }
 
