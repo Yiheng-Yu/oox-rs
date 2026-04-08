@@ -48,15 +48,7 @@ impl XmlNode {
 
     fn from_quick_xml_element(xml_element: &BytesStart<'_>) -> Result<Self, Box<dyn std::error::Error>> {
         let name_string = std::str::from_utf8(xml_element.as_ref())?;
-        let name_pattern = Regex::new(r"^(?P<name>[^\s]+)")?;
-        let name = name_pattern
-            .captures(&name_string)
-            .ok_or("Error capturing XML tag regex")?
-            .name("name")
-            .ok_or("Could not find capture group")?
-            .as_str()
-            .to_string();
-
+        let name = name_string.split_whitespace().next().ok_or("Error parsing XML tag")?;
         let mut node = Self::new(name);
 
         for attr in xml_element.attributes() {
