@@ -610,10 +610,7 @@ impl Slide {
         let mut xml_string = String::new();
         zip_file.read_to_string(&mut xml_string)?;
         let node = XmlNode::from_str(xml_string.as_str())?;
-        match Self::from_xml_element(&node) {
-            Ok(slide) => Ok(slide),
-            Err(err) => return Err(err),
-        }
+        Self::from_xml_element(&node)
     }
 
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
