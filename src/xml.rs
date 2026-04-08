@@ -4,12 +4,13 @@ use quick_xml::{
     events::{BytesStart, Event},
 };
 use regex::Regex;
-use std::fs::File;
 use std::{
     collections::HashMap,
     fmt::{Display, Formatter},
     io::Read,
+    fs::File,
     str::FromStr,
+    sync::LazyLock
 };
 use zip::read::ZipFile;
 
@@ -39,10 +40,10 @@ impl XmlNode {
     }
 
     pub fn local_name(&self) -> &str {
-        let pattern = Regex::new(r"^[A-Za-z]+:(?P<local_name>[A-Za-z0-9]+)").expect("Error creating regex");
-        match pattern.captures(&self.name) {
-            Some(capture) => capture.name("local_name").unwrap().as_str(),
-            None => &self.name,
+        static PATTERN_LOCAL_NAME: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[A-Za-z]+:(?P<local_name>[A-Za-z0-9]+)").unwrap());  
+        match PATTERN_LOCAL_NAME.captures(&self.name) {  
+            Some(capture) => capture.name("local_name").unwrap().as_str(),  
+            None => &self.name, 
         }
     }
 
