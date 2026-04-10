@@ -1,3 +1,7 @@
+use super::{
+    animation::{Build, TimeNodeGroup},
+    presentation::{CustomerDataList, SlideLayoutIdList},
+};
 use crate::{
     error::{MissingAttributeError, MissingChildNodeError, NotGroupMemberError},
     shared::{
@@ -21,13 +25,9 @@ use crate::{
     xml::{XmlNode, parse_xml_bool},
     xsdtypes::{XsdChoice, XsdType},
 };
+use log::{debug, info};
 use std::{error::Error, io::Read, str::FromStr};
 use zip::read::ZipFile;
-
-use super::{
-    animation::{Build, TimeNodeGroup},
-    presentation::{CustomerDataList, SlideLayoutIdList},
-};
 
 pub type Result<T> = ::std::result::Result<T, Box<dyn Error>>;
 
@@ -636,6 +636,7 @@ impl Slide {
             match child_node.local_name() {
                 "cSld" => common_slide_data = Some(Box::new(CommonSlideData::from_xml_element(child_node)?)),
                 "clrMapOvr" => {
+                    debug!("clrMapOvr");
                     color_mapping_override = Some(
                         child_node
                             .child_nodes
@@ -786,6 +787,7 @@ pub struct Background {
 
 impl Background {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
+        info!("parsing background");
         let black_and_white_mode = xml_node.attributes.get("bwMode").map(|val| val.parse()).transpose()?;
 
         let background = xml_node
@@ -819,6 +821,13 @@ pub struct Placeholder {
 
 impl Placeholder {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
+        let ph_name = xml_node
+            .attributes
+            .get("idx")
+            .or_else(|| xml_node.attributes.get("type"))
+            .ok_or("Missing placeholder name/ type!")?;
+        debug!("parsing Placeholder {}", ph_name);
+
         xml_node
             .attributes
             .iter()
@@ -1690,6 +1699,7 @@ pub struct CommonSlideData {
 
 impl CommonSlideData {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
+        debug!("Common slide data (cSld)");
         let name = xml_node.attributes.get("name").cloned();
         let mut background = None;
         let mut shape_tree = None;
@@ -2386,6 +2396,7 @@ pub struct SlideTransition {
 
 impl SlideTransition {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
+        debug!("transition");
         xml_node
             .attributes
             .iter()
@@ -2454,6 +2465,7 @@ pub struct SlideTiming {
 
 impl SlideTiming {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
+        debug!("timing");
         xml_node
             .child_nodes
             .iter()

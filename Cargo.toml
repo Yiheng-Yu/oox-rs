@@ -24,7 +24,7 @@ strum_macros = "0.28.0"
 regex = "1.12.3"
 
 [dev-dependencies]
-simple_logger = "1.4.0"
+simple_logger = "5.2.0"
 
 [features]
 docx = []

@@ -2256,7 +2256,6 @@ pub struct Placeholder {
 impl Placeholder {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
         info!("parsing Placeholder");
-
         let document_part = xml_node
             .child_nodes
             .iter()
