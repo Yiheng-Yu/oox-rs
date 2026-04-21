@@ -27,6 +27,7 @@ use crate::{
 };
 use log::{debug, info};
 use std::{error::Error, io::Read, str::FromStr};
+use strum::EnumString;
 use zip::read::ZipFile;
 
 pub type Result<T> = ::std::result::Result<T, Box<dyn Error>>;

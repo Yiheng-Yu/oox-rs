@@ -9,19 +9,18 @@ license = "MIT"
 repository = "https://github.com/dam4rus/oox-rs.git"
 homepage = "https://github.com/dam4rus/oox-rs"
 readme = "README.md"
-exclude = [
-    "tests/sample.pptx",
-    "tests/sample.docx",
-    "tests/presentation.xml",
-]
+exclude = ["tests/sample.pptx", "tests/sample.docx", "tests/presentation.xml"]
 
 [dependencies]
 quick-xml = "0.39.2"
-zip = "8.2.0"
+zip = { version = "8.5.0", default-features = false, features = [
+    "deflate-flate2",
+] }
+flate2 = { version = "1.1.9" } # need to be added for the deflate-flate2 feature
+regex = "1.12.3"
 log = "0.4.29"
 strum = "0.28.0"
 strum_macros = "0.28.0"
-regex = "1.12.3"
 
 [dev-dependencies]
 simple_logger = "5.2.0"
@@ -29,4 +28,4 @@ simple_logger = "5.2.0"
 [features]
 docx = []
 pptx = []
-all = [ "docx", "pptx" ]
+all = ["docx", "pptx"]

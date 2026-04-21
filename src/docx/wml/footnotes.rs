@@ -1,3 +1,5 @@
+use strum::EnumString;
+
 use super::{document::BlockLevelElts, simpletypes::DecimalNumber};
 use crate::{
     error::{LimitViolationError, MaxOccurs, MissingAttributeError},
