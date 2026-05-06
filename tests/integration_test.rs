@@ -1,4 +1,4 @@
-#![cfg(feature = "docx")]
+#![cfg(all(feature = "pptx", feature = "docx"))]
 extern crate oox;
 
 use oox::{
@@ -7,8 +7,6 @@ use oox::{
     shared::drawingml::coordsys::{Point2D, PositiveSize2D},
 };
 use std::path::PathBuf;
-
-
 
 fn test_docx_package(sample_docx_file: &PathBuf) {
     let package = DocxPackage::from_file(sample_docx_file).unwrap();
@@ -25,7 +23,6 @@ fn test_docx_package(sample_docx_file: &PathBuf) {
     assert_eq!(package.themes.len(), 1);
     package.themes.get("theme1").unwrap();
 }
-
 
 fn test_pptx_package(sample_pptx_file: &PathBuf) {
     let document = PptxPackage::from_file(sample_pptx_file).unwrap();

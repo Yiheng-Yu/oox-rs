@@ -19,8 +19,7 @@ zip = { version = "8.5.0", default-features = false, features = [
 flate2 = { version = "1.1.9" } # need to be added for the deflate-flate2 feature
 regex = "1.12.3"
 log = "0.4.29"
-strum = "0.28.0"
-strum_macros = "0.28.0"
+strum = { version = "0.28", features = ["derive"] }
 
 [dev-dependencies]
 simple_logger = "5.2.0"
