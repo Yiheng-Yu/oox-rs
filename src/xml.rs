@@ -4,12 +4,13 @@ use quick_xml::{
     events::{BytesStart, Event},
 };
 use regex::Regex;
-use std::fs::File;
 use std::{
     collections::HashMap,
     fmt::{Display, Formatter},
+    fs::File,
     io::Read,
     str::FromStr,
+    sync::LazyLock,
 };
 use zip::read::ZipFile;
 
@@ -39,24 +40,17 @@ impl XmlNode {
     }
 
     pub fn local_name(&self) -> &str {
-        let pattern = Regex::new(r"^[A-Za-z]+:(?P<local_name>[A-Za-z0-9]+)").expect("Error creating regex");
-        match pattern.captures(&self.name) {
+        static PATTERN_LOCAL_NAME: LazyLock<Regex> =
+            LazyLock::new(|| Regex::new(r"^[A-Za-z]+:(?P<local_name>[A-Za-z0-9]+)").unwrap());
+        match PATTERN_LOCAL_NAME.captures(&self.name) {
             Some(capture) => capture.name("local_name").unwrap().as_str(),
             None => &self.name,
         }
     }
 
-    fn from_quick_xml_element(xml_element: &BytesStart<'_>) -> Result<Self, ::std::str::Utf8Error> {
+    fn from_quick_xml_element(xml_element: &BytesStart<'_>) -> Result<Self, Box<dyn std::error::Error>> {
         let name_string = std::str::from_utf8(xml_element.as_ref())?;
-        let name_pattern = Regex::new(r"^(?P<name>[^\s]+)").unwrap();
-        let name = name_pattern
-            .captures(&name_string)
-            .expect("Regex match failed")
-            .name("name")
-            .expect("Unable to find match")
-            .as_str()
-            .to_string();
-
+        let name = name_string.split_whitespace().next().ok_or("Error parsing XML tag")?;
         let mut node = Self::new(name);
 
         for attr in xml_element.attributes() {
@@ -74,7 +68,7 @@ impl XmlNode {
         xml_node: &mut Self,
         xml_element: &BytesStart<'_>,
         xml_reader: &mut Reader<&[u8]>,
-    ) -> Result<Vec<Self>, ::std::str::Utf8Error> {
+    ) -> Result<Vec<Self>, Box<dyn std::error::Error>> {
         let mut child_nodes = Vec::new();
         loop {
             match xml_reader.read_event() {
@@ -84,7 +78,7 @@ impl XmlNode {
                     child_nodes.push(node);
                 }
                 Ok(Event::Text(text)) => {
-                    xml_node.text = Some(text.decode().expect("Error decoding xml content").to_string());
+                    xml_node.text = Some(text.decode()?.to_string());
                 }
                 Ok(Event::Empty(ref element)) => {
                     let node = Self::from_quick_xml_element(element)?;

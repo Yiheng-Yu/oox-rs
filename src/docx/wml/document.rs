@@ -27,6 +27,7 @@ use crate::{
 };
 use log::info;
 use std::str::FromStr;
+use strum::EnumString;
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -2256,7 +2257,6 @@ pub struct Placeholder {
 impl Placeholder {
     pub fn from_xml_element(xml_node: &XmlNode) -> Result<Self> {
         info!("parsing Placeholder");
-
         let document_part = xml_node
             .child_nodes
             .iter()

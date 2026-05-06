@@ -1,3 +1,5 @@
+use strum::EnumString;
+
 use crate::{
     error::{LimitViolationError, MaxOccurs, MissingAttributeError, MissingChildNodeError, NotGroupMemberError},
     shared::{

@@ -8,14 +8,10 @@ use oox::{
 };
 use std::path::PathBuf;
 
-#[test]
-fn test_docx_package_load() {
-    //simple_logger::init().unwrap();
 
-    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let sample_docx_file = manifest_dir.join("tests/sample.docx");
 
-    let package = DocxPackage::from_file(&sample_docx_file).unwrap();
+fn test_docx_package(sample_docx_file: &PathBuf) {
+    let package = DocxPackage::from_file(sample_docx_file).unwrap();
 
     assert!(package.app_info.is_some());
     assert!(package.core.is_some());
@@ -30,13 +26,9 @@ fn test_docx_package_load() {
     package.themes.get("theme1").unwrap();
 }
 
-#[test]
-#[ignore]
-fn test_pptx_package_load() {
-    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let sample_pptx_file = manifest_dir.join("tests/sample.pptx");
 
-    let document = PptxPackage::from_file(&sample_pptx_file).unwrap();
+fn test_pptx_package(sample_pptx_file: &PathBuf) {
+    let document = PptxPackage::from_file(sample_pptx_file).unwrap();
     let mut slides = document.slides();
     {
         let first_slide = slides.next().unwrap();
@@ -64,3 +56,35 @@ fn test_pptx_package_load() {
 
     assert_eq!(slides.next().is_none(), true);
 }
+
+
+#[test]
+fn test_ecma_docx_package_load() {
+    simple_logger::init_with_level(log::Level::Warn).unwrap();
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let sample_docx_file = manifest_dir.join("tests/files/sample.docx");
+    test_docx_package(&sample_docx_file)
+}
+
+#[test]
+fn test_office_docx_package_load() {
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let sample_docx_file = manifest_dir.join("tests/files/office-xml/Complex01.docx");
+    test_docx_package(&sample_docx_file)
+}
+
+
+#[test]
+fn test_ecma_pptx_package_load() {
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let sample_pptx_file = manifest_dir.join("tests/files/sample.pptx");
+    test_pptx_package(&sample_pptx_file)
+}
+
+#[test]
+fn test_office_pptx_package_load() {
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let sample_pptx_file = manifest_dir.join("tests/files/office-xml/o09_Performance_typical.pptx");
+    test_pptx_package(&sample_pptx_file)
+}
+
