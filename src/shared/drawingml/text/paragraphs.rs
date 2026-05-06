@@ -112,7 +112,7 @@ impl TextField {
             }
         }
 
-        let id = id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "id"))?;
+        let id = id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "id"))?;
 
         let mut char_properties = None;
         let mut paragraph_properties = None;
@@ -565,7 +565,7 @@ impl TextParagraphProperties {
                                         .find_map(TextSpacing::try_from_xml_element)
                                         .transpose()?
                                         .ok_or_else(|| {
-                                            MissingChildNodeError::new(child_node.name.clone(), "EG_TextSpacing")
+                                            MissingChildNodeError::new::<Self>(child_node.name.clone(), "EG_TextSpacing")
                                         })?,
                                 );
                             }
@@ -577,7 +577,7 @@ impl TextParagraphProperties {
                                         .find_map(TextSpacing::try_from_xml_element)
                                         .transpose()?
                                         .ok_or_else(|| {
-                                            MissingChildNodeError::new(child_node.name.clone(), "EG_TextSpacing")
+                                            MissingChildNodeError::new::<Self>(child_node.name.clone(), "EG_TextSpacing")
                                         })?,
                                 );
                             }
@@ -589,7 +589,7 @@ impl TextParagraphProperties {
                                         .find_map(TextSpacing::try_from_xml_element)
                                         .transpose()?
                                         .ok_or_else(|| {
-                                            MissingChildNodeError::new(child_node.name.clone(), "EG_TextSpacing")
+                                            MissingChildNodeError::new::<Self>(child_node.name.clone(), "EG_TextSpacing")
                                         })?,
                                 );
                             }
@@ -604,7 +604,7 @@ impl TextParagraphProperties {
                                 instance.tab_stop_list = match vec.len() {
                                     len if len <= 32 => Some(vec),
                                     len => {
-                                        return Err(Box::<dyn Error>::from(LimitViolationError::new(
+                                        return Err(Box::<dyn Error>::from(LimitViolationError::new::<Self>(
                                             xml_node.name.clone(),
                                             "tabLst",
                                             0,
@@ -1106,7 +1106,7 @@ impl TextCharacterProperties {
                                     .iter()
                                     .find_map(Color::try_from_xml_element)
                                     .transpose()?
-                                    .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "CT_Color"))?;
+                                    .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "CT_Color"))?;
 
                                 instance.highlight_color = Some(color);
                             }
@@ -1208,7 +1208,7 @@ impl XsdType for TextSpacing {
         match xml_node.local_name() {
             "spcPct" => Ok(TextSpacing::Percent(xml_node.get_val_attribute()?.parse()?)),
             "spcPts" => Ok(TextSpacing::Point(xml_node.get_val_attribute()?.parse()?)),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_TextSpacing").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_TextSpacing").into()),
         }
     }
 }

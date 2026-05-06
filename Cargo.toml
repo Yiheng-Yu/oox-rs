@@ -4,27 +4,27 @@ version = "0.1.0"
 edition = "2024"
 description = "Open Office XML file format deserializer"
 authors = ["Kalmár Róbert <rfrostkalmar@gmail.com>"]
-keywords = ["office", "pptx", "ppt", "docx", "doc"]
+keywords = ["doc", "docx", "office", "ppt", "pptx"]
 license = "MIT"
 repository = "https://github.com/dam4rus/oox-rs.git"
 homepage = "https://github.com/dam4rus/oox-rs"
 readme = "README.md"
-exclude = ["tests/sample.pptx", "tests/sample.docx", "tests/presentation.xml"]
+exclude = ["tests/presentation.xml", "tests/sample.docx", "tests/sample.pptx"]
 
 [dependencies]
-quick-xml = "0.39.2"
-zip = { version = "8.5.0", default-features = false, features = [
-    "deflate-flate2",
-] }
-flate2 = { version = "1.1.9" } # need to be added for the deflate-flate2 feature
-regex = "1.12.3"
+flate2 = { version = "1.1.9" }  # need to be added for the deflate-flate2 feature
 log = "0.4.29"
+quick-xml = "0.39.3"
+regex = "1.12.3"
 strum = { version = "0.28", features = ["derive"] }
+zip = { version = "8.5.0", default-features = false, features = [
+  "deflate-flate2",
+] }
 
 [dev-dependencies]
 simple_logger = "5.2.0"
 
 [features]
+all = ["docx", "pptx"]
 docx = []
 pptx = []
-all = ["docx", "pptx"]

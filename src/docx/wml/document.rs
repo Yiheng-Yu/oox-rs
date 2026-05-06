@@ -301,7 +301,7 @@ impl Color {
             }
         }
 
-        let value = value.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "val"))?;
+        let value = value.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "val"))?;
 
         Ok(Self {
             value,
@@ -347,7 +347,7 @@ impl ProofErr {
         let type_attr = xml_node
             .attributes
             .get("w:type")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "type"))?;
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "type"))?;
 
         Ok(Self {
             error_type: type_attr.parse()?,
@@ -402,7 +402,7 @@ impl Perm {
         }
 
         Ok(Self {
-            id: id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "id"))?,
+            id: id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "id"))?,
             displaced_by_custom_xml,
         })
     }
@@ -458,7 +458,7 @@ impl Markup {
         let id_attr = xml_node
             .attributes
             .get("w:id")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "id"))?;
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "id"))?;
 
         Ok(Self { id: id_attr.parse()? })
     }
@@ -534,7 +534,7 @@ impl Bookmark {
         let name = xml_node
             .attributes
             .get("w:name")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "name"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "name"))?
             .clone();
 
         Ok(Self { base, name })
@@ -556,13 +556,13 @@ impl MoveBookmark {
         let author = xml_node
             .attributes
             .get("w:author")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "author"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "author"))?
             .clone();
 
         let date = xml_node
             .attributes
             .get("w:date")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "date"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "date"))?
             .clone();
 
         Ok(Self { base, author, date })
@@ -584,7 +584,7 @@ impl TrackChange {
         let author = xml_node
             .attributes
             .get("w:author")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "author"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "author"))?
             .clone();
 
         let date = xml_node.attributes.get("w:date").cloned();
@@ -618,9 +618,9 @@ impl Attr {
         }
 
         Ok(Self {
-            uri: uri.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "uri"))?,
-            name: name.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "name"))?,
-            value: value.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "val"))?,
+            uri: uri.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "uri"))?,
+            name: name.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "name"))?,
+            value: value.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "val"))?,
         })
     }
 }
@@ -684,7 +684,7 @@ impl SimpleField {
             .filter_map(PContent::try_from_xml_element)
             .collect::<Result<Vec<_>>>()?;
 
-        let field_codes = field_codes.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "instr"))?;
+        let field_codes = field_codes.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "instr"))?;
 
         Ok(Self {
             field_codes,
@@ -746,7 +746,7 @@ impl Rel {
         let rel_id = xml_node
             .attributes
             .get("r:id")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:id"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:id"))?
             .clone();
 
         Ok(Self { rel_id })
@@ -772,7 +772,7 @@ impl XsdType for PContent {
             node_name if ContentRunContent::is_choice_member(node_name) => Ok(PContent::ContentRunContent(Box::new(
                 ContentRunContent::from_xml_element(xml_node)?,
             ))),
-            _ => Err(Box::new(NotGroupMemberError::new(xml_node.name.clone(), "PContent"))),
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "PContent"))),
         }
     }
 }
@@ -823,8 +823,8 @@ impl CustomXmlRun {
             }
         }
 
-        let uri = uri.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "uri"))?;
-        let element = element.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "element"))?;
+        let uri = uri.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "uri"))?;
+        let element = element.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "element"))?;
         Ok(Self {
             custom_xml_properties,
             paragraph_contents,
@@ -890,8 +890,8 @@ impl SmartTagRun {
             }
         }
 
-        let uri = uri.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "uri"))?;
-        let element = element.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "element"))?;
+        let uri = uri.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "uri"))?;
+        let element = element.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "element"))?;
 
         Ok(Self {
             uri,
@@ -1518,7 +1518,7 @@ impl Border {
         }
 
         Ok(Self {
-            value: value.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "val"))?,
+            value: value.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "val"))?,
             color,
             theme_color,
             theme_tint,
@@ -1670,7 +1670,7 @@ impl Shd {
             }
         }
 
-        let value = value.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "value"))?;
+        let value = value.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "value"))?;
         Ok(Self {
             value,
             color,
@@ -1722,7 +1722,7 @@ impl FitText {
             }
         }
 
-        let value = value.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "val"))?;
+        let value = value.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "val"))?;
 
         Ok(Self { value, id })
     }
@@ -1931,7 +1931,7 @@ impl XsdType for RPrBase {
             "eastAsianLayout" => Ok(RPrBase::EastAsianLayout(EastAsianLayout::from_xml_element(xml_node)?)),
             "specVanish" => Ok(RPrBase::SpecialVanish(parse_on_off_xml_element(xml_node)?)),
             "oMath" => Ok(RPrBase::OMath(parse_on_off_xml_element(xml_node)?)),
-            _ => Err(Box::new(NotGroupMemberError::new(xml_node.name.clone(), "RPrBase"))),
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "RPrBase"))),
         }
     }
 }
@@ -1983,7 +1983,7 @@ impl RPrChange {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "rPr")
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "rPr").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "rPr").into())
             .and_then(RPrOriginal::from_xml_element)?;
 
         Ok(Self { base, run_properties })
@@ -2026,13 +2026,13 @@ impl SdtListItem {
         let display_text = xml_node
             .attributes
             .get("w:displayText")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "displayText"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "displayText"))?
             .clone();
 
         let value = xml_node
             .attributes
             .get("w:value")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "value"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "value"))?
             .clone();
 
         Ok(Self { display_text, value })
@@ -2176,7 +2176,7 @@ impl SdtText {
         let is_multi_line_attr = xml_node
             .attributes
             .get("w:multiLine")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "multiLine"))?;
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "multiLine"))?;
 
         Ok(Self {
             is_multi_line: parse_xml_bool(is_multi_line_attr)?,
@@ -2225,7 +2225,7 @@ impl SdtPrChoice {
             "citation" => Ok(SdtPrChoice::Citation),
             "group" => Ok(SdtPrChoice::Group),
             "bibliography" => Ok(SdtPrChoice::Bibliography),
-            _ => Err(Box::new(NotGroupMemberError::new(xml_node.name.clone(), "SdtPrChoice"))),
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "SdtPrChoice"))),
         }
     }
 }
@@ -2262,7 +2262,7 @@ impl Placeholder {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "docPart")
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "docPart"))?
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "docPart"))?
             .get_val_attribute()?
             .clone();
 
@@ -2294,9 +2294,9 @@ impl DataBinding {
             }
         }
 
-        let xpath = xpath.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "xpath"))?;
+        let xpath = xpath.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "xpath"))?;
         let store_item_id =
-            store_item_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "storeItemId"))?;
+            store_item_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "storeItemId"))?;
 
         Ok(Self {
             prefix_mappings,
@@ -2529,7 +2529,7 @@ impl Text {
         let text = xml_node
             .text
             .as_ref()
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "Text node"))?
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "Text node"))?
             .clone();
 
         Ok(Self { text, xml_space })
@@ -2622,7 +2622,7 @@ impl ObjectEmbed {
             }
         }
 
-        let rel_id = rel_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:id"))?;
+        let rel_id = rel_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:id"))?;
 
         Ok(Self {
             draw_aspect,
@@ -2665,7 +2665,7 @@ impl ObjectLink {
             }
         }
 
-        let update_mode = update_mode.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "updateMode"))?;
+        let update_mode = update_mode.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "updateMode"))?;
 
         Ok(Self {
             base,
@@ -2699,7 +2699,7 @@ impl ObjectChoice {
             "objectLink" => Ok(ObjectChoice::ObjectLink(ObjectLink::from_xml_element(xml_node)?)),
             "objectEmbed" => Ok(ObjectChoice::ObjectEmbed(ObjectEmbed::from_xml_element(xml_node)?)),
             "movie" => Ok(ObjectChoice::Movie(Rel::from_xml_element(xml_node)?)),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "ObjectChoice",
             ))),
@@ -2718,7 +2718,7 @@ impl XsdType for DrawingChoice {
         match xml_node.local_name() {
             "anchor" => Ok(DrawingChoice::Anchor(Anchor::from_xml_element(xml_node)?)),
             "inline" => Ok(DrawingChoice::Inline(Inline::from_xml_element(xml_node)?)),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "DrawingChoice",
             ))),
@@ -2864,7 +2864,7 @@ impl FFCheckBoxSizeChoice {
         match xml_node.local_name() {
             "size" => Ok(FFCheckBoxSizeChoice::Explicit(HpsMeasure::from_xml_element(xml_node)?)),
             "sizeAuto" => Ok(FFCheckBoxSizeChoice::Auto(parse_on_off_xml_element(xml_node)?)),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "FFCheckBoxSizeChoice",
             ))),
@@ -2898,7 +2898,7 @@ impl FFCheckBox {
             }
         }
 
-        let size = size.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "size|sizeAuto"))?;
+        let size = size.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "size|sizeAuto"))?;
 
         Ok(Self {
             size,
@@ -3009,7 +3009,7 @@ impl XsdType for FFData {
             "checkBox" => Ok(FFData::CheckBox(FFCheckBox::from_xml_element(xml_node)?)),
             "ddList" => Ok(FFData::DropDownList(FFDDList::from_xml_element(xml_node)?)),
             "textInput" => Ok(FFData::TextInput(FFTextInput::from_xml_element(xml_node)?)),
-            _ => Err(Box::new(NotGroupMemberError::new(xml_node.name.clone(), "FFData"))),
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "FFData"))),
         }
     }
 }
@@ -3066,7 +3066,7 @@ impl FldChar {
             .transpose()?;
 
         let field_char_type =
-            field_char_type.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "fldCharType"))?;
+            field_char_type.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "fldCharType"))?;
 
         Ok(Self {
             form_field_properties,
@@ -3126,12 +3126,12 @@ impl RubyPr {
             }
         }
 
-        let ruby_align = ruby_align.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "rubyAlign"))?;
-        let hps = hps.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "hps"))?;
-        let hps_raise = hps_raise.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "hpsRaise"))?;
+        let ruby_align = ruby_align.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "rubyAlign"))?;
+        let hps = hps.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "hps"))?;
+        let hps_raise = hps_raise.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "hpsRaise"))?;
         let hps_base_text =
-            hps_base_text.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "hpsBaseText"))?;
-        let language_id = language_id.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "lid"))?;
+            hps_base_text.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "hpsBaseText"))?;
+        let language_id = language_id.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "lid"))?;
 
         Ok(Self {
             ruby_align,
@@ -3157,7 +3157,7 @@ impl XsdType for RubyContentChoice {
             node_name if RunLevelElts::is_choice_member(node_name) => Ok(RubyContentChoice::RunLevelElement(
                 RunLevelElts::from_xml_element(xml_node)?,
             )),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "RubyContentChoice",
             ))),
@@ -3218,9 +3218,9 @@ impl Ruby {
         }
 
         let ruby_properties =
-            ruby_properties.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "rubyPr"))?;
-        let ruby_content = ruby_content.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "rt"))?;
-        let ruby_base = ruby_base.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "rubyBase"))?;
+            ruby_properties.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "rubyPr"))?;
+        let ruby_content = ruby_content.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "rt"))?;
+        let ruby_base = ruby_base.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "rubyBase"))?;
 
         Ok(Self {
             ruby_properties,
@@ -3253,7 +3253,7 @@ impl FtnEdnRef {
 
         Ok(Self {
             custom_mark_follows,
-            id: id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "id"))?,
+            id: id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "id"))?,
         })
     }
 }
@@ -3314,9 +3314,9 @@ impl PTab {
             }
         }
 
-        let alignment = alignment.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "alignment"))?;
-        let relative_to = relative_to.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "relativeTo"))?;
-        let leader = leader.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "leader"))?;
+        let alignment = alignment.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "alignment"))?;
+        let relative_to = relative_to.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "relativeTo"))?;
+        let leader = leader.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "leader"))?;
 
         Ok(Self {
             alignment,
@@ -3443,7 +3443,7 @@ impl RunInnerContent {
             "drawing" => Ok(RunInnerContent::Drawing(Drawing::from_xml_element(xml_node)?)),
             "ptab" => Ok(RunInnerContent::PositionTab(PTab::from_xml_element(xml_node)?)),
             "lastRenderedPageBreak" => Ok(RunInnerContent::LastRenderedPageBreak),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "RunInnerContent",
             ))),
@@ -3525,7 +3525,7 @@ impl ContentRunContent {
             node_name if RunLevelElts::is_choice_member(node_name) => Ok(ContentRunContent::RunLevelElements(
                 RunLevelElts::from_xml_element(xml_node)?,
             )),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "ContentRunContent",
             ))),
@@ -3548,7 +3548,7 @@ impl XsdType for RunTrackChangeChoice {
                 ContentRunContent::from_xml_element(xml_node)?,
             ))
         } else {
-            Err(Box::new(NotGroupMemberError::new(
+            Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "RunTrackChangeChoice",
             )))
@@ -3678,7 +3678,7 @@ impl RangeMarkupElements {
             "customXmlMoveToRangeEnd" => Ok(RangeMarkupElements::CustomXmlMoveToRangeEnd(Markup::from_xml_element(
                 xml_node,
             )?)),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "RangeMarkupElements",
             ))),
@@ -3739,7 +3739,7 @@ impl RunLevelElts {
                 RangeMarkupElements::from_xml_element(xml_node)?,
             )),
             // TODO MathContent
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "RunLevelElts",
             ))),
@@ -3783,7 +3783,7 @@ impl CustomXmlBlock {
             }
         }
 
-        let element = element.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "element"))?;
+        let element = element.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "element"))?;
 
         Ok(Self {
             custom_xml_properties,
@@ -4111,8 +4111,8 @@ impl TabStop {
             }
         }
 
-        let value = value.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "val"))?;
-        let position = position.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "pos"))?;
+        let value = value.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "val"))?;
+        let position = position.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "pos"))?;
 
         Ok(Self {
             value,
@@ -4137,7 +4137,7 @@ impl Tabs {
             .collect::<Result<Vec<_>>>()?;
 
         if tabs.is_empty() {
-            Err(Box::new(LimitViolationError::new(
+            Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "tab",
                 1,
@@ -4669,7 +4669,7 @@ impl ParaRPrChange {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "rPr")
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "rPr").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "rPr").into())
             .and_then(ParaRPrOriginal::from_xml_element)?;
 
         Ok(Self { base, run_properties })
@@ -4730,7 +4730,7 @@ impl HdrFtrRef {
         let header_footer_type = xml_node
             .attributes
             .get("w:type")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "type"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "type"))?
             .parse()?;
 
         Ok(Self {
@@ -4751,7 +4751,7 @@ impl XsdType for HdrFtrReferences {
         match xml_node.local_name() {
             "headerReference" => Ok(HdrFtrReferences::Header(HdrFtrRef::from_xml_element(xml_node)?)),
             "footerReference" => Ok(HdrFtrReferences::Footer(HdrFtrRef::from_xml_element(xml_node)?)),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "HdrFtrReferences",
             ))),
@@ -4933,7 +4933,7 @@ impl NumFmt {
         }
 
         Ok(Self {
-            value: value.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "val"))?,
+            value: value.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "val"))?,
             format,
         })
     }
@@ -5138,13 +5138,13 @@ impl PageMar {
         }
 
         Ok(Self {
-            top: top.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "top"))?,
-            right: right.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "right"))?,
-            bottom: bottom.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "bottom"))?,
-            left: left.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "left"))?,
-            header: header.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "header"))?,
-            footer: footer.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "footer"))?,
-            gutter: gutter.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "gutter"))?,
+            top: top.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "top"))?,
+            right: right.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "right"))?,
+            bottom: bottom.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "bottom"))?,
+            left: left.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "left"))?,
+            header: header.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "header"))?,
+            footer: footer.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "footer"))?,
+            gutter: gutter.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "gutter"))?,
         })
     }
 }
@@ -5452,7 +5452,7 @@ impl Columns {
 
         match instance.columns.len() {
             0..=45 => Ok(instance),
-            occurs => Err(Box::new(LimitViolationError::new(
+            occurs => Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "col",
                 0,
@@ -5744,7 +5744,7 @@ impl SectPr {
 
         match instance.header_footer_references.len() {
             0..=6 => Ok(instance),
-            occurs => Err(Box::new(LimitViolationError::new(
+            occurs => Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "headerReference|footerReference",
                 0,
@@ -5770,7 +5770,7 @@ impl PPrChange {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "pPr")
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "pPr").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "pPr").into())
             .and_then(PPrBase::from_xml_element)?;
 
         Ok(Self { base, properties })
@@ -5889,7 +5889,7 @@ impl XsdType for ContentBlockContent {
             node_name if RunLevelElts::is_choice_member(&node_name) => Ok(ContentBlockContent::RunLevelElement(
                 RunLevelElts::from_xml_element(xml_node)?,
             )),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "ContentBlockContent",
             ))),
@@ -5964,7 +5964,7 @@ impl XsdType for BlockLevelElts {
             node_name if ContentBlockContent::is_choice_member(node_name) => {
                 Ok(BlockLevelElts::Chunk(ContentBlockContent::from_xml_element(xml_node)?))
             }
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "BlockLevelElts",
             ))),

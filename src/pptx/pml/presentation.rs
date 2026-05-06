@@ -189,7 +189,7 @@ impl CustomerDataList {
                         let id = child_node
                             .attributes
                             .get("r:id")
-                            .ok_or_else(|| MissingAttributeError::new(child_node.name.clone(), "r:id"))?
+                            .ok_or_else(|| MissingAttributeError::new::<Self>(child_node.name.clone(), "r:id"))?
                             .clone();
                         instance.customer_data_list.push(id);
                     }
@@ -197,7 +197,7 @@ impl CustomerDataList {
                         let id = child_node
                             .attributes
                             .get("r:id")
-                            .ok_or_else(|| MissingAttributeError::new(child_node.name.clone(), "r:id"))?
+                            .ok_or_else(|| MissingAttributeError::new::<Self>(child_node.name.clone(), "r:id"))?
                             .clone();
                         instance.tags = Some(id);
                     }
@@ -249,8 +249,8 @@ impl SlideSize {
             }
         }
 
-        let width = width.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "cx"))?;
-        let height = height.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "cy"))?;
+        let width = width.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "cx"))?;
+        let height = height.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "cy"))?;
 
         Ok(Self {
             width,
@@ -283,9 +283,9 @@ impl SlideIdListEntry {
             }
         }
 
-        let id = id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "id"))?;
+        let id = id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "id"))?;
         let relationship_id =
-            relationship_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:id"))?;
+            relationship_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:id"))?;
 
         Ok(Self { id, relationship_id })
     }
@@ -316,7 +316,7 @@ impl SlideLayoutIdListEntry {
         }
 
         let relationship_id =
-            relationship_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:id"))?;
+            relationship_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:id"))?;
 
         Ok(Self { id, relationship_id })
     }
@@ -363,7 +363,7 @@ impl SlideMasterIdListEntry {
         }
 
         let relationship_id =
-            relationship_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:id"))?;
+            relationship_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:id"))?;
 
         Ok(Self { id, relationship_id })
     }
@@ -382,7 +382,7 @@ impl NotesMasterIdListEntry {
         let relationship_id = xml_node
             .attributes
             .get("r:id")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:id"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:id"))?
             .clone();
 
         Ok(Self { relationship_id })
@@ -402,7 +402,7 @@ impl HandoutMasterIdListEntry {
         let relationship_id = xml_node
             .attributes
             .get("r:id")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:id"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:id"))?
             .clone();
 
         Ok(Self { relationship_id })
@@ -531,7 +531,7 @@ impl EmbeddedFontListEntry {
                     let id = child_node
                         .attributes
                         .get("r:id")
-                        .ok_or_else(|| MissingAttributeError::new(child_node.name.clone(), "r:id"))?
+                        .ok_or_else(|| MissingAttributeError::new::<Self>(child_node.name.clone(), "r:id"))?
                         .clone();
                     regular = Some(id);
                 }
@@ -539,7 +539,7 @@ impl EmbeddedFontListEntry {
                     let id = child_node
                         .attributes
                         .get("r:id")
-                        .ok_or_else(|| MissingAttributeError::new(child_node.name.clone(), "r:id"))?
+                        .ok_or_else(|| MissingAttributeError::new::<Self>(child_node.name.clone(), "r:id"))?
                         .clone();
                     bold = Some(id);
                 }
@@ -547,7 +547,7 @@ impl EmbeddedFontListEntry {
                     let id = child_node
                         .attributes
                         .get("r:id")
-                        .ok_or_else(|| MissingAttributeError::new(child_node.name.clone(), "r:id"))?
+                        .ok_or_else(|| MissingAttributeError::new::<Self>(child_node.name.clone(), "r:id"))?
                         .clone();
                     italic = Some(id);
                 }
@@ -555,7 +555,7 @@ impl EmbeddedFontListEntry {
                     let id = child_node
                         .attributes
                         .get("r:id")
-                        .ok_or_else(|| MissingAttributeError::new(child_node.name.clone(), "r:id"))?
+                        .ok_or_else(|| MissingAttributeError::new::<Self>(child_node.name.clone(), "r:id"))?
                         .clone();
                     bold_italic = Some(id);
                 }
@@ -563,7 +563,7 @@ impl EmbeddedFontListEntry {
             }
         }
 
-        let font = font.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "font"))?;
+        let font = font.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "font"))?;
 
         Ok(Self {
             font,
@@ -587,7 +587,7 @@ impl SlideRelationshipList {
                 .filter(|child_node| child_node.local_name() == "sld")
                 .map(|child_node| {
                     child_node.attributes.get("r:id").cloned().ok_or_else(|| {
-                        Box::<dyn Error>::from(MissingAttributeError::new(child_node.name.clone(), "r:id"))
+                        Box::<dyn Error>::from(MissingAttributeError::new::<Self>(child_node.name.clone(), "r:id"))
                     })
                 })
                 .collect::<Result<Vec<_>>>()?;
@@ -619,14 +619,14 @@ impl CustomShow {
             }
         }
 
-        let name = name.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "name"))?;
-        let id = id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "id"))?;
+        let name = name.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "name"))?;
+        let id = id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "id"))?;
 
         let slides = xml_node
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "sldLst")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "sldLst")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "sldLst")))
             .and_then(SlideRelationshipList::from_xml_element)?;
 
         Ok(Self { name, id, slides })
@@ -700,9 +700,9 @@ impl Kinsoku {
         }
 
         let invalid_start_chars =
-            invalid_start_chars.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "invalStChars"))?;
+            invalid_start_chars.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "invalStChars"))?;
         let invalid_end_chars =
-            invalid_end_chars.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "invalEndChars"))?;
+            invalid_end_chars.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "invalEndChars"))?;
 
         Ok(Self {
             language,
@@ -1237,7 +1237,7 @@ impl Presentation {
                                 let r_id = child_node
                                     .attributes
                                     .get("r:id")
-                                    .ok_or_else(|| MissingAttributeError::new(child_node.name.clone(), "r:id"))?
+                                    .ok_or_else(|| MissingAttributeError::new::<Self>(child_node.name.clone(), "r:id"))?
                                     .clone();
 
                                 instance.smart_tags = Some(r_id);

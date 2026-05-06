@@ -464,7 +464,7 @@ impl XsdType for ColorTransform {
             "blueMod" => Ok(ColorTransform::BlueModulate(xml_node.parse_val_attribute()?)),
             "gamma" => Ok(ColorTransform::Gamma),
             "invGamma" => Ok(ColorTransform::InverseGamma),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_ColorTransform").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_ColorTransform").into()),
         }
     }
 }
@@ -510,9 +510,9 @@ impl ScRgbColor {
             }
         }
 
-        let r = opt_r.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r"))?;
-        let g = opt_g.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "g"))?;
-        let b = opt_b.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "b"))?;
+        let r = opt_r.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r"))?;
+        let g = opt_g.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "g"))?;
+        let b = opt_b.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "b"))?;
 
         let color_transforms = xml_node
             .child_nodes
@@ -542,7 +542,7 @@ impl SRgbColor {
         let value = xml_node
             .attributes
             .get("val")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingAttributeError::new(xml_node.name.clone(), "val")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingAttributeError::new::<Self>(xml_node.name.clone(), "val")))
             .and_then(|value| u32::from_str_radix(value, 16).map_err(Box::from))?;
 
         let color_transforms = xml_node
@@ -592,9 +592,9 @@ impl HslColor {
             }
         }
 
-        let hue = opt_h.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "hue"))?;
-        let saturation = opt_s.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "sat"))?;
-        let luminance = opt_l.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "lum"))?;
+        let hue = opt_h.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "hue"))?;
+        let saturation = opt_s.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "sat"))?;
+        let luminance = opt_l.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "lum"))?;
 
         let color_transforms = xml_node
             .child_nodes
@@ -636,7 +636,7 @@ impl SystemColor {
             }
         }
 
-        let value = opt_val.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "val"))?;
+        let value = opt_val.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "val"))?;
 
         let color_transforms = xml_node
             .child_nodes
@@ -690,7 +690,7 @@ impl SchemeColor {
         let value = xml_node
             .attributes
             .get("val")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "val"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "val"))?
             .parse()?;
 
         let color_transforms = xml_node
@@ -803,7 +803,7 @@ impl XsdType for Color {
             "sysClr" => Ok(Color::SystemColor(SystemColor::from_xml_element(xml_node)?)),
             "schemeClr" => Ok(Color::SchemeColor(SchemeColor::from_xml_element(xml_node)?)),
             "prstClr" => Ok(Color::PresetColor(PresetColor::from_xml_element(xml_node)?)),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_ColorChoice").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_ColorChoice").into()),
         }
     }
 }
@@ -835,7 +835,7 @@ impl CustomColor {
             .child_nodes
             .iter()
             .find(|child_node| Color::is_choice_member(child_node.local_name()))
-            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "EG_ColorChoice")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_ColorChoice")))
             .and_then(Color::from_xml_element)?;
 
         Ok(Self { name, color })
@@ -869,7 +869,7 @@ impl XsdType for ColorMappingOverride {
             "overrideClrMapping" => Ok(ColorMappingOverride::Override(Box::new(
                 ColorMapping::from_xml_element(xml_node)?,
             ))),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "CT_ColorMappingOverride").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "CT_ColorMappingOverride").into()),
         }
     }
 }

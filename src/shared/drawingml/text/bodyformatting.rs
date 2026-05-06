@@ -543,7 +543,7 @@ impl XsdType for TextAutoFit {
                 xml_node,
             )?)),
             "spAutoFit" => Ok(TextAutoFit::ShapeAutoFit),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_TextAutofit").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_TextAutofit").into()),
         }
     }
 }

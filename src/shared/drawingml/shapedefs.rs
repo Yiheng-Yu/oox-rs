@@ -55,10 +55,10 @@ impl GeomRect {
             }
         }
 
-        let left = left.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "l"))?;
-        let top = top.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "t"))?;
-        let right = right.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r"))?;
-        let bottom = bottom.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "b"))?;
+        let left = left.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "l"))?;
+        let top = top.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "t"))?;
+        let right = right.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r"))?;
+        let bottom = bottom.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "b"))?;
 
         Ok(Self {
             left,
@@ -126,7 +126,7 @@ impl PolarAdjustHandle {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "pos")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "pos")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "pos")))
             .and_then(AdjPoint2D::from_xml_element)?;
 
         Ok(Self {
@@ -246,7 +246,7 @@ impl XYAdjustHandle {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "pos")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "pos")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "pos")))
             .and_then(AdjPoint2D::from_xml_element)?;
 
         Ok(Self {
@@ -283,7 +283,7 @@ impl XsdType for AdjustHandle {
             "ahPolar" => Ok(AdjustHandle::Polar(Box::new(PolarAdjustHandle::from_xml_element(
                 xml_node,
             )?))),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "AdjustHandle").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "AdjustHandle").into()),
         }
     }
 }
@@ -379,8 +379,8 @@ impl AdjPoint2D {
             }
         }
 
-        let x = x.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "x"))?;
-        let y = y.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "y"))?;
+        let x = x.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "x"))?;
+        let y = y.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "y"))?;
 
         Ok(Self { x, y })
     }
@@ -427,10 +427,10 @@ impl Path2DArcTo {
             }
         }
 
-        let width_radius = width_radius.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "wR"))?;
-        let height_radius = height_radius.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "hR"))?;
-        let start_angle = start_angle.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "stAng"))?;
-        let swing_angle = swing_angle.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "swAng"))?;
+        let width_radius = width_radius.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "wR"))?;
+        let height_radius = height_radius.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "hR"))?;
+        let start_angle = start_angle.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "stAng"))?;
+        let swing_angle = swing_angle.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "swAng"))?;
 
         Ok(Self {
             width_radius,
@@ -742,8 +742,8 @@ impl GeomGuide {
             }
         }
 
-        let name = name.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "name"))?;
-        let formula = formula.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "fmla"))?;
+        let name = name.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "name"))?;
+        let formula = formula.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "fmla"))?;
         Ok(Self { name, formula })
     }
 }
@@ -861,7 +861,7 @@ impl XsdType for Path2DCommand {
             xml_node
                 .child_nodes
                 .get(index)
-                .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "pt")))
+                .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "pt")))
                 .and_then(AdjPoint2D::from_xml_element)
         };
 
@@ -876,7 +876,7 @@ impl XsdType for Path2DCommand {
                 get_point_at(1)?,
                 get_point_at(2)?,
             )),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "EG_Path2DCommand",
             ))),
@@ -1111,7 +1111,7 @@ impl PresetGeometry2D {
         let preset = xml_node
             .attributes
             .get("prst")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "prst"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "prst"))?
             .parse()?;
 
         let adjust_value_list = xml_node
@@ -1202,7 +1202,7 @@ impl XsdType for Geometry {
             "prstGeom" => Ok(Geometry::Preset(Box::new(PresetGeometry2D::from_xml_element(
                 xml_node,
             )?))),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_Geometry").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_Geometry").into()),
         }
     }
 }
@@ -1255,7 +1255,7 @@ impl PresetTextShape {
         let preset = xml_node
             .attributes
             .get("prst")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "prst"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "prst"))?
             .parse()?;
 
         let adjust_value_list = xml_node
@@ -1338,14 +1338,14 @@ impl ConnectionSite {
         let angle = xml_node
             .attributes
             .get("ang")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "ang"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "ang"))?
             .parse()?;
 
         let position = xml_node
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "pos")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "pos")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "pos")))
             .and_then(AdjPoint2D::from_xml_element)?;
 
         Ok(Self { angle, position })

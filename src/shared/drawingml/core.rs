@@ -68,7 +68,7 @@ impl XsdType for AnimationGraphicalObjectBuildProperties {
             "bldChart" => Ok(AnimationGraphicalObjectBuildProperties::BuildChart(
                 AnimationChartBuildProperties::from_xml_element(xml_node)?,
             )),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "CT_AnimationGraphicalObjectBuildProperties",
             ))),
@@ -175,7 +175,7 @@ impl XsdType for AnimationElementChoice {
             "chart" => Ok(AnimationElementChoice::Chart(AnimationChartElement::from_xml_element(
                 xml_node,
             )?)),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "CT_AnimationElementChoice",
             ))),
@@ -261,7 +261,7 @@ impl AnimationChartElement {
             }
         }
 
-        let build_step = build_step.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "bldStep"))?;
+        let build_step = build_step.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "bldStep"))?;
 
         Ok(Self {
             series_index,
@@ -575,8 +575,8 @@ impl NonVisualDrawingProps {
             }
         }
 
-        let id = opt_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "id"))?;
-        let name = opt_name.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "name"))?;
+        let id = opt_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "id"))?;
+        let name = opt_name.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "name"))?;
 
         Ok(Self {
             id,
@@ -928,8 +928,8 @@ impl Connection {
             }
         }
 
-        let id = id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "id"))?;
-        let shape_index = shape_index.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "idx"))?;
+        let id = id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "id"))?;
+        let shape_index = shape_index.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "idx"))?;
 
         Ok(Self { id, shape_index })
     }
@@ -953,7 +953,7 @@ impl GraphicalObject {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "graphicData")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "graphicData")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "graphicData")))
             .and_then(GraphicalObjectData::from_xml_element)?;
 
         Ok(Self { graphic_data })
@@ -975,7 +975,7 @@ impl GraphicalObjectData {
         let uri = xml_node
             .attributes
             .get("uri")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingAttributeError::new(xml_node.name.clone(), "uri")))?
+            .ok_or_else(|| Box::<dyn Error>::from(MissingAttributeError::new::<Self>(xml_node.name.clone(), "uri")))?
             .clone();
 
         Ok(Self { uri })
@@ -1233,13 +1233,13 @@ impl ShapeStyle {
         }
 
         let line_reference =
-            line_reference.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "lnRef"))?;
+            line_reference.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "lnRef"))?;
         let fill_reference =
-            fill_reference.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "fillRef"))?;
+            fill_reference.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "fillRef"))?;
         let effect_reference =
-            effect_reference.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "effectRef"))?;
+            effect_reference.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "effectRef"))?;
         let font_reference =
-            font_reference.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "fontRef"))?;
+            font_reference.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "fontRef"))?;
 
         Ok(Self {
             line_reference,
@@ -1307,7 +1307,7 @@ impl TextBody {
         }
 
         let body_properties =
-            body_properties.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "bodyPr"))?;
+            body_properties.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "bodyPr"))?;
 
         Ok(Self {
             body_properties,

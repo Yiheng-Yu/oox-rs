@@ -67,7 +67,7 @@ impl AlphaBiLevelEffect {
         let threshold = xml_node
             .attributes
             .get("thresh")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "thresh"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "thresh"))?
             .parse()?;
 
         Ok(Self { threshold })
@@ -109,7 +109,7 @@ impl AlphaModulateEffect {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "cont")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "container")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "container")))
             .and_then(EffectContainer::from_xml_element)?;
 
         Ok(Self { container })
@@ -167,7 +167,7 @@ impl AlphaReplaceEffect {
         let alpha = xml_node
             .attributes
             .get("a")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "a"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "a"))?
             .parse()?;
 
         Ok(Self { alpha })
@@ -189,7 +189,7 @@ impl BiLevelEffect {
         let threshold = xml_node
             .attributes
             .get("thresh")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "thresh"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "thresh"))?
             .parse()?;
 
         Ok(Self { threshold })
@@ -210,14 +210,14 @@ impl BlendEffect {
         let blend = xml_node
             .attributes
             .get("blend")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "blend"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "blend"))?
             .parse()?;
 
         let container = xml_node
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "cont")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "cont")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cont")))
             .and_then(EffectContainer::from_xml_element)?;
 
         Ok(Self { blend, container })
@@ -307,8 +307,8 @@ impl ColorChangeEffect {
             }
         }
 
-        let color_from = color_from.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "clrFrom"))?;
-        let color_to = color_to.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "clrTo"))?;
+        let color_from = color_from.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "clrFrom"))?;
+        let color_to = color_to.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "clrTo"))?;
 
         Ok(Self {
             use_alpha,
@@ -332,7 +332,7 @@ impl ColorReplaceEffect {
             .iter()
             .find_map(Color::try_from_xml_element)
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_Color"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_Color"))?;
 
         Ok(Self { color })
     }
@@ -381,12 +381,12 @@ impl DuotoneEffect {
         let color1 = iterator
             .next()
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_Color"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_Color"))?;
 
         let color2 = iterator
             .next()
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_Color"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_Color"))?;
 
         // TODO(dam4rus): Check if node contains more than 2 color?
         Ok(Self {
@@ -408,7 +408,7 @@ impl FillEffect {
             .iter()
             .find_map(FillProperties::try_from_xml_element)
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_FillProperties"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_FillProperties"))?;
 
         Ok(Self { fill_properties })
     }
@@ -428,7 +428,7 @@ impl FillOverlayEffect {
         let blend_mode = xml_node
             .attributes
             .get("blend")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "blend"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "blend"))?
             .parse()?;
 
         let fill = xml_node
@@ -436,7 +436,7 @@ impl FillOverlayEffect {
             .iter()
             .find_map(FillProperties::try_from_xml_element)
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_FillProperties"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_FillProperties"))?;
 
         Ok(Self { blend_mode, fill })
     }
@@ -461,7 +461,7 @@ impl GlowEffect {
             .iter()
             .find_map(Color::try_from_xml_element)
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_ColorChoice"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_ColorChoice"))?;
 
         Ok(Self { radius, color })
     }
@@ -533,7 +533,7 @@ impl InnerShadowEffect {
             .iter()
             .find_map(Color::try_from_xml_element)
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_ColorChoice"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_ColorChoice"))?;
 
         let mut blur_radius = None;
         let mut distance = None;
@@ -615,7 +615,7 @@ impl OuterShadowEffect {
             .iter()
             .find_map(Color::try_from_xml_element)
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_ColorChoice"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_ColorChoice"))?;
 
         let mut blur_radius = None;
         let mut distance = None;
@@ -686,7 +686,7 @@ impl PresetShadowEffect {
             .iter()
             .find_map(Color::try_from_xml_element)
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_ColorChoice"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_ColorChoice"))?;
 
         let mut preset = None;
         let mut distance = None;
@@ -701,7 +701,7 @@ impl PresetShadowEffect {
             }
         }
 
-        let preset = preset.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "prst"))?;
+        let preset = preset.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "prst"))?;
 
         Ok(Self {
             preset,
@@ -859,7 +859,7 @@ impl SoftEdgesEffect {
         let radius = xml_node
             .attributes
             .get("rad")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "rad"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "rad"))?
             .parse()?;
 
         Ok(Self { radius })
@@ -1026,7 +1026,7 @@ impl XsdType for Effect {
                 let reference = xml_node
                     .attributes
                     .get("ref")
-                    .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "ref"))?
+                    .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "ref"))?
                     .clone();
                 Ok(Effect::EffectReference(reference))
             }
@@ -1062,7 +1062,7 @@ impl XsdType for Effect {
             "softEdge" => Ok(Effect::SoftEdges(SoftEdgesEffect::from_xml_element(xml_node)?)),
             "tint" => Ok(Effect::Tint(TintEffect::from_xml_element(xml_node)?)),
             "xfrm" => Ok(Effect::Transform(TransformEffect::from_xml_element(xml_node)?)),
-            _ => Err(Box::new(NotGroupMemberError::new(xml_node.name.clone(), "EG_Effect"))),
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_Effect"))),
         }
     }
 }
@@ -1148,7 +1148,7 @@ impl XsdType for BlipEffect {
             "hsl" => Ok(BlipEffect::Hsl(HslEffect::from_xml_element(xml_node)?)),
             "lum" => Ok(BlipEffect::Luminance(LuminanceEffect::from_xml_element(xml_node)?)),
             "tint" => Ok(BlipEffect::Tint(TintEffect::from_xml_element(xml_node)?)),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_BlipEffect").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_BlipEffect").into()),
         }
     }
 }
@@ -1202,7 +1202,7 @@ impl XsdType for EffectProperties {
             "effectDag" => Ok(EffectProperties::EffectContainer(Box::new(
                 EffectContainer::from_xml_element(xml_node)?,
             ))),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "EG_EffectProperties",
             ))),
@@ -1372,7 +1372,7 @@ impl GradientFillProperties {
                                 match gradient_stop_list.len() {
                                     len if len >= 2 => instance.gradient_stop_list = Some(gradient_stop_list),
                                     len => {
-                                        return Err(Box::<dyn Error>::from(LimitViolationError::new(
+                                        return Err(Box::<dyn Error>::from(LimitViolationError::new::<Self>(
                                             xml_node.name.clone(),
                                             "gsLst",
                                             2,
@@ -1533,8 +1533,8 @@ impl DashStop {
             }
         }
 
-        let dash_length = opt_dash_length.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "d"))?;
-        let space_length = opt_space_length.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "sp"))?;
+        let dash_length = opt_dash_length.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "d"))?;
+        let space_length = opt_space_length.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "sp"))?;
 
         Ok(Self {
             dash_length,
@@ -1557,7 +1557,7 @@ impl GradientStop {
         let position = xml_node
             .attributes
             .get("pos")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "pos"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "pos"))?
             .parse()?;
 
         let color = xml_node
@@ -1565,7 +1565,7 @@ impl GradientStop {
             .iter()
             .find_map(Color::try_from_xml_element)
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "color"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "color"))?;
 
         Ok(Self { position, color })
     }
@@ -1696,7 +1696,7 @@ impl XsdType for ShadeProperties {
                 xml_node,
             )?)),
             "path" => Ok(ShadeProperties::Path(PathShadeProperties::from_xml_element(xml_node)?)),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_ShadeProperties").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_ShadeProperties").into()),
         }
     }
 }
@@ -1739,7 +1739,7 @@ impl PatternFillProperties {
                             .iter()
                             .find_map(Color::try_from_xml_element)
                             .transpose()?
-                            .ok_or_else(|| MissingChildNodeError::new(child_node.name.clone(), "EG_Color"))?;
+                            .ok_or_else(|| MissingChildNodeError::new::<Self>(child_node.name.clone(), "EG_Color"))?;
 
                         instance.fg_color = Some(fg_color);
                     }
@@ -1749,7 +1749,7 @@ impl PatternFillProperties {
                             .iter()
                             .find_map(Color::try_from_xml_element)
                             .transpose()?
-                            .ok_or_else(|| MissingChildNodeError::new(child_node.name.clone(), "EG_Color"))?;
+                            .ok_or_else(|| MissingChildNodeError::new::<Self>(child_node.name.clone(), "EG_Color"))?;
 
                         instance.bg_color = Some(bg_color);
                     }
@@ -1811,7 +1811,7 @@ impl XsdType for FillProperties {
                     .iter()
                     .find_map(Color::try_from_xml_element)
                     .transpose()?
-                    .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "color"))?;
+                    .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "color"))?;
 
                 Ok(FillProperties::SolidFill(color))
             }
@@ -1825,7 +1825,7 @@ impl XsdType for FillProperties {
                 PatternFillProperties::from_xml_element(xml_node)?,
             ))),
             "grpFill" => Ok(FillProperties::GroupFill),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_FillProperties").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_FillProperties").into()),
         }
     }
 }
@@ -1866,7 +1866,7 @@ impl XsdType for LineJoinProperties {
 
                 Ok(LineJoinProperties::Miter(lim))
             }
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_LineJoinProperties").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_LineJoinProperties").into()),
         }
     }
 }
@@ -1984,7 +1984,7 @@ impl XsdType for FillModeProperties {
             "stretch" => Ok(FillModeProperties::Stretch(Box::new(
                 StretchInfoProperties::from_xml_element(xml_node)?,
             ))),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_FillModeProperties").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_FillModeProperties").into()),
         }
     }
 }
@@ -2023,7 +2023,7 @@ impl XsdType for LineFillProperties {
                     .iter()
                     .find_map(Color::try_from_xml_element)
                     .transpose()?
-                    .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "color"))?;
+                    .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "color"))?;
 
                 Ok(LineFillProperties::SolidFill(color))
             }
@@ -2033,7 +2033,7 @@ impl XsdType for LineFillProperties {
             "pattFill" => Ok(LineFillProperties::PatternFill(Box::new(
                 PatternFillProperties::from_xml_element(xml_node)?,
             ))),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_LineFillProperties").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_LineFillProperties").into()),
         }
     }
 }
@@ -2075,7 +2075,7 @@ impl XsdType for LineDashProperties {
                     .get("val")
                     .map(|value| value.parse())
                     .transpose()?
-                    .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "val"))?;
+                    .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "val"))?;
 
                 Ok(LineDashProperties::PresetDash(val))
             }
@@ -2089,7 +2089,7 @@ impl XsdType for LineDashProperties {
 
                 Ok(LineDashProperties::CustomDash(dash_vec))
             }
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_LineDashProperties").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_LineDashProperties").into()),
         }
     }
 }

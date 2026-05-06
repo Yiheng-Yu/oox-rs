@@ -87,19 +87,19 @@ impl ColorMapping {
             }
         }
 
-        let background1 = background1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "bg1"))?;
-        let text1 = text1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "tx1"))?;
-        let background2 = background2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "bg2"))?;
-        let text2 = text2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "tx2"))?;
-        let accent1 = accent1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent1"))?;
-        let accent2 = accent2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent2"))?;
-        let accent3 = accent3.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent3"))?;
-        let accent4 = accent4.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent4"))?;
-        let accent5 = accent5.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent5"))?;
-        let accent6 = accent6.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "accent6"))?;
-        let hyperlink = hyperlink.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "hlink"))?;
+        let background1 = background1.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "bg1"))?;
+        let text1 = text1.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "tx1"))?;
+        let background2 = background2.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "bg2"))?;
+        let text2 = text2.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "tx2"))?;
+        let accent1 = accent1.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "accent1"))?;
+        let accent2 = accent2.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "accent2"))?;
+        let accent3 = accent3.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "accent3"))?;
+        let accent4 = accent4.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "accent4"))?;
+        let accent5 = accent5.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "accent5"))?;
+        let accent6 = accent6.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "accent6"))?;
+        let hyperlink = hyperlink.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "hlink"))?;
         let followed_hyperlink =
-            followed_hyperlink.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "folHlink"))?;
+            followed_hyperlink.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "folHlink"))?;
 
         Ok(Self {
             background1,
@@ -177,7 +177,7 @@ impl ColorScheme {
         let name = xml_node
             .attributes
             .get("name")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "name"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "name"))?
             .clone();
 
         let mut dk1 = None;
@@ -199,7 +199,7 @@ impl ColorScheme {
                 .iter()
                 .find_map(Color::try_from_xml_element)
                 .transpose()?
-                .ok_or_else(|| MissingChildNodeError::new(child_node.name.clone(), "EG_Color"))?;
+                .ok_or_else(|| MissingChildNodeError::new::<Self>(child_node.name.clone(), "EG_Color"))?;
 
             match child_node.local_name() {
                 "dk1" => dk1 = Some(color),
@@ -218,19 +218,19 @@ impl ColorScheme {
             }
         }
 
-        let dark1 = dk1.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "dk1"))?;
-        let light1 = lt1.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "lt1"))?;
-        let dark2 = dk2.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "dk2"))?;
-        let light2 = lt2.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "lt2"))?;
-        let accent1 = accent1.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "accent1"))?;
-        let accent2 = accent2.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "accent2"))?;
-        let accent3 = accent3.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "accent3"))?;
-        let accent4 = accent4.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "accent4"))?;
-        let accent5 = accent5.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "accent5"))?;
-        let accent6 = accent6.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "accent6"))?;
-        let hyperlink = hyperlink.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "hlink"))?;
+        let dark1 = dk1.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "dk1"))?;
+        let light1 = lt1.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "lt1"))?;
+        let dark2 = dk2.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "dk2"))?;
+        let light2 = lt2.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "lt2"))?;
+        let accent1 = accent1.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "accent1"))?;
+        let accent2 = accent2.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "accent2"))?;
+        let accent3 = accent3.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "accent3"))?;
+        let accent4 = accent4.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "accent4"))?;
+        let accent5 = accent5.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "accent5"))?;
+        let accent6 = accent6.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "accent6"))?;
+        let hyperlink = hyperlink.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "hlink"))?;
         let followed_hyperlink =
-            follow_hyperlink.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "folHlink"))?;
+            follow_hyperlink.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "folHlink"))?;
 
         Ok(Self {
             name,
@@ -349,7 +349,7 @@ impl ColorSchemeAndMapping {
         }
 
         let color_scheme =
-            color_scheme.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "clrScheme"))?;
+            color_scheme.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "clrScheme"))?;
 
         Ok(Self {
             color_scheme,
@@ -716,10 +716,10 @@ impl BaseStyles {
         }
 
         let color_scheme =
-            color_scheme.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "clrScheme"))?;
-        let font_scheme = font_scheme.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "fontScheme"))?;
+            color_scheme.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "clrScheme"))?;
+        let font_scheme = font_scheme.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "fontScheme"))?;
         let format_scheme =
-            format_scheme.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "fmtScheme"))?;
+            format_scheme.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "fmtScheme"))?;
 
         Ok(Self {
             color_scheme,

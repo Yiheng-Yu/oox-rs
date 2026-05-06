@@ -2,18 +2,21 @@ use std::{
     error::Error,
     fmt::{Display, Formatter, Result},
     num::ParseIntError,
+    any::type_name,
 };
 
 /// An error indicating that an xml element doesn't have an attribute that's marked as required in the schema
 #[derive(Debug, Clone, PartialEq)]
 pub struct MissingAttributeError {
+    pub caller: String,
     pub node_name: String,
     pub attr: &'static str,
 }
 
 impl MissingAttributeError {
-    pub fn new<T: Into<String>>(node_name: T, attr: &'static str) -> Self {
+    pub fn new<C>(node_name: impl Into<String>, attr: &'static str) -> Self {
         Self {
+            caller: type_name::<C>().into(),
             node_name: node_name.into(),
             attr,
         }
@@ -39,13 +42,15 @@ impl Error for MissingAttributeError {
 /// An error indicating that an xml element doesn't have a child node that's marked as required in the schema
 #[derive(Debug, Clone, PartialEq)]
 pub struct MissingChildNodeError {
+    pub caller: String,
     pub node_name: String,
     pub child_node: &'static str,
 }
 
 impl MissingChildNodeError {
-    pub fn new<T: Into<String>>(node_name: T, child_node: &'static str) -> Self {
+    pub fn new<C>(node_name: impl Into<String>, child_node: &'static str) -> Self {
         Self {
+            caller: type_name::<C>().into(),
             node_name: node_name.into(),
             child_node,
         }
@@ -71,13 +76,15 @@ impl Error for MissingChildNodeError {
 /// An error indicating that an xml element is not a member of a given element group
 #[derive(Debug, Clone, PartialEq)]
 pub struct NotGroupMemberError {
-    node_name: String,
-    group: &'static str,
+    pub caller: String,
+    pub node_name: String,
+    pub group: &'static str,
 }
 
 impl NotGroupMemberError {
-    pub fn new<T: Into<String>>(node_name: T, group: &'static str) -> Self {
+    pub fn new<C>(node_name: impl Into<String>, group: &'static str) -> Self {
         Self {
+            caller: type_name::<C>().into(),
             node_name: node_name.into(),
             group,
         }
@@ -118,6 +125,7 @@ impl Display for MaxOccurs {
 /// An error indicating that the xml element violates either minOccurs or maxOccurs of the schema
 #[derive(Debug, Clone, PartialEq)]
 pub struct LimitViolationError {
+    caller: String,
     node_name: String,
     violating_node_name: &'static str,
     min_occurs: u32,
@@ -126,14 +134,15 @@ pub struct LimitViolationError {
 }
 
 impl LimitViolationError {
-    pub fn new<T: Into<String>>(
-        node_name: T,
+    pub fn new<C>(
+        node_name: impl Into<String>,
         violating_node_name: &'static str,
         min_occurs: u32,
         max_occurs: MaxOccurs,
         occurs: u32,
     ) -> Self {
-        LimitViolationError {
+        Self {
+            caller: type_name::<C>().into(),
             node_name: node_name.into(),
             violating_node_name,
             min_occurs,

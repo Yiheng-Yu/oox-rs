@@ -57,8 +57,8 @@ impl AudioCD {
             }
         }
 
-        let start_time = start_time.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "st"))?;
-        let end_time = end_time.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "end"))?;
+        let start_time = start_time.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "st"))?;
+        let end_time = end_time.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "end"))?;
 
         Ok(Self { start_time, end_time })
     }
@@ -104,7 +104,7 @@ impl AudioFile {
             }
         }
 
-        let link = link.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:link"))?;
+        let link = link.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:link"))?;
 
         Ok(Self { link, content_type })
     }
@@ -135,7 +135,7 @@ impl AudioCDTime {
             }
         }
 
-        let track = track.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "track"))?;
+        let track = track.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "track"))?;
 
         Ok(Self { track, time })
     }
@@ -153,7 +153,7 @@ impl QuickTimeFile {
         let link = xml_node
             .attributes
             .get("r:link")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:link"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:link"))?
             .clone();
 
         Ok(Self { link })
@@ -197,7 +197,7 @@ impl VideoFile {
             }
         }
 
-        let link = link.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:link"))?;
+        let link = link.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:link"))?;
 
         Ok(Self { link, content_type })
     }
@@ -229,7 +229,7 @@ impl EmbeddedWAVAudioFile {
             }
         }
 
-        let embed_rel_id = embed_rel_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:embed"))?;
+        let embed_rel_id = embed_rel_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:embed"))?;
 
         Ok(Self { embed_rel_id, name })
     }
@@ -400,7 +400,7 @@ impl XsdType for Media {
             "audioFile" => Ok(Media::AudioFile(AudioFile::from_xml_element(xml_node)?)),
             "videoFile" => Ok(Media::VideoFile(VideoFile::from_xml_element(xml_node)?)),
             "quickTimeFile" => Ok(Media::QuickTimeFile(QuickTimeFile::from_xml_element(xml_node)?)),
-            _ => Err(Box::new(NotGroupMemberError::new(xml_node.name.clone(), "EG_Media"))),
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_Media"))),
         }
     }
 }

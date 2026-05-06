@@ -42,7 +42,7 @@ impl FtnEdn {
             }
         }
 
-        let id = id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:id"))?;
+        let id = id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:id"))?;
 
         let block_level_elements = xml_node
             .child_nodes
@@ -57,7 +57,7 @@ impl FtnEdn {
                 block_level_elements,
             })
         } else {
-            Err(Box::new(LimitViolationError::new(
+            Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "BlockLevelElts",
                 1,

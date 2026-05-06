@@ -416,8 +416,8 @@ impl SlideMaster {
         }
 
         let common_slide_data =
-            common_slide_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cSld"))?;
-        let color_mapping = color_mapping.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "clrMap"))?;
+            common_slide_data.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cSld"))?;
+        let color_mapping = color_mapping.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "clrMap"))?;
 
         Ok(Self {
             common_slide_data,
@@ -523,7 +523,7 @@ impl SlideLayout {
                             .find_map(ColorMappingOverride::try_from_xml_element)
                             .transpose()?
                             .ok_or_else(|| {
-                                MissingChildNodeError::new(
+                                MissingChildNodeError::new::<Self>(
                                     child_node.name.clone(),
                                     "masterClrMapping|overrideClrMapping",
                                 )
@@ -538,7 +538,7 @@ impl SlideLayout {
         }
 
         let common_slide_data =
-            common_slide_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cSld"))?;
+            common_slide_data.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cSld"))?;
 
         Ok(Self {
             matching_name,
@@ -645,7 +645,7 @@ impl Slide {
                             .find_map(ColorMappingOverride::try_from_xml_element)
                             .transpose()?
                             .ok_or_else(|| {
-                                MissingChildNodeError::new(
+                                MissingChildNodeError::new::<Self>(
                                     child_node.name.clone(),
                                     "masterClrMapping|overrideClrMapping",
                                 )
@@ -659,7 +659,7 @@ impl Slide {
         }
 
         let common_slide_data =
-            common_slide_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cSld"))?;
+            common_slide_data.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cSld"))?;
 
         Ok(Self {
             show,
@@ -704,7 +704,7 @@ impl BackgroundProperties {
             }
         }
 
-        let fill = fill.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_FillProperties"))?;
+        let fill = fill.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_FillProperties"))?;
 
         Ok(Self {
             shade_to_title,
@@ -758,7 +758,7 @@ impl XsdType for BackgroundGroup {
             "bgRef" => Ok(BackgroundGroup::Reference(StyleMatrixReference::from_xml_element(
                 xml_node,
             )?)),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_Background").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_Background").into()),
         }
     }
 }
@@ -796,7 +796,7 @@ impl Background {
             .iter()
             .find_map(BackgroundGroup::try_from_xml_element)
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_Background"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_Background"))?;
 
         Ok(Self {
             background,
@@ -1053,12 +1053,12 @@ impl XsdType for ShapeGroup {
                 let rel_id = xml_node
                     .attributes
                     .get("r:id")
-                    .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:id"))?
+                    .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:id"))?
                     .clone();
 
                 Ok(ShapeGroup::ContentPart(rel_id))
             }
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "EG_ShapeGroup",
             ))),
@@ -1146,8 +1146,8 @@ impl Shape {
         }
 
         let non_visual_props =
-            non_visual_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvSpPr"))?;
-        let shape_props = shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "spPr"))?;
+            non_visual_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "nvSpPr"))?;
+        let shape_props = shape_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "spPr"))?;
 
         Ok(Self {
             use_bg_fill,
@@ -1199,10 +1199,10 @@ impl ShapeNonVisual {
             }
         }
 
-        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
+        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvPr"))?;
         let shape_drawing_props =
-            shape_drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvSpPr"))?;
-        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
+            shape_drawing_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvSpPr"))?;
+        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "nvPr"))?;
 
         Ok(Self {
             drawing_props,
@@ -1244,9 +1244,9 @@ impl GroupShape {
         }
 
         let non_visual_props =
-            non_visual_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvGrpSpPr"))?;
+            non_visual_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "nvGrpSpPr"))?;
         let group_shape_props =
-            group_shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "grpSpPr"))?;
+            group_shape_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "grpSpPr"))?;
 
         Ok(Self {
             non_visual_props,
@@ -1282,10 +1282,10 @@ impl GroupShapeNonVisual {
             }
         }
 
-        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
+        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvPr"))?;
         let group_drawing_props =
-            group_drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvGrpSpPr"))?;
-        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
+            group_drawing_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvGrpSpPr"))?;
+        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "nvPr"))?;
 
         Ok(Self {
             drawing_props,
@@ -1341,9 +1341,9 @@ impl GraphicalObjectFrame {
         }
 
         let non_visual_props =
-            non_visual_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvGraphicFramePr"))?;
-        let transform = transform.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "xfrm"))?;
-        let graphic = graphic.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "graphic"))?;
+            non_visual_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "nvGraphicFramePr"))?;
+        let transform = transform.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "xfrm"))?;
+        let graphic = graphic.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "graphic"))?;
 
         Ok(Self {
             black_white_mode,
@@ -1380,10 +1380,10 @@ impl GraphicalObjectFrameNonVisual {
             }
         }
 
-        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
+        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvPr"))?;
         let graphic_frame_props = graphic_frame_props
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvGraphicFramePr"))?;
-        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvGraphicFramePr"))?;
+        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "nvPr"))?;
 
         Ok(Self {
             drawing_props,
@@ -1447,8 +1447,8 @@ impl Connector {
         }
 
         let non_visual_props =
-            non_visual_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvCxnSpPr"))?;
-        let shape_props = shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvCxnSpPr"))?;
+            non_visual_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "nvCxnSpPr"))?;
+        let shape_props = shape_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "nvCxnSpPr"))?;
 
         Ok(Self {
             non_visual_props,
@@ -1482,10 +1482,10 @@ impl ConnectorNonVisual {
             }
         }
 
-        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
+        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvPr"))?;
         let connector_props =
-            connector_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvCxnSpPr"))?;
-        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
+            connector_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvCxnSpPr"))?;
+        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "nvPr"))?;
 
         Ok(Self {
             drawing_props,
@@ -1561,9 +1561,9 @@ impl Picture {
         }
 
         let non_visual_props =
-            non_visual_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPicPr"))?;
-        let blip_fill = blip_fill.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "blipFill"))?;
-        let shape_props = shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "spPr"))?;
+            non_visual_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "nvPicPr"))?;
+        let blip_fill = blip_fill.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "blipFill"))?;
+        let shape_props = shape_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "spPr"))?;
 
         Ok(Self {
             non_visual_props,
@@ -1614,10 +1614,10 @@ impl PictureNonVisual {
             }
         }
 
-        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
+        let drawing_props = drawing_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvPr"))?;
         let picture_props =
-            picture_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPicPr"))?;
-        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPr"))?;
+            picture_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvPicPr"))?;
+        let app_props = app_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "nvPr"))?;
 
         Ok(Self {
             drawing_props,
@@ -1726,7 +1726,7 @@ impl CommonSlideData {
             }
         }
 
-        let shape_tree = shape_tree.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "spTree"))?;
+        let shape_tree = shape_tree.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "spTree"))?;
 
         Ok(Self {
             name,
@@ -2244,7 +2244,7 @@ impl XsdType for SlideTransitionGroup {
                 xml_node,
             )?)),
             "zoom" => Ok(SlideTransitionGroup::Zoom(InOutTransition::from_xml_element(xml_node)?)),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "EG_SlideTransition",
             ))),
@@ -2299,7 +2299,7 @@ impl TransitionStartSoundAction {
             .find(|child_node| child_node.local_name() == "snd")
             .map(EmbeddedWAVAudioFile::from_xml_element)
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "snd"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "snd"))?;
 
         Ok(Self { is_looping, sound_file })
     }
@@ -2342,7 +2342,7 @@ impl XsdType for TransitionSoundAction {
                 TransitionStartSoundAction::from_xml_element(xml_node)?,
             )),
             "endSnd" => Ok(TransitionSoundAction::EndSound),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "CT_TransitionSoundAction",
             ))),
@@ -2483,7 +2483,7 @@ impl SlideTiming {
                         instance.time_node_list = if !vec.is_empty() {
                             Some(vec)
                         } else {
-                            return Err(Box::<dyn Error>::from(MissingChildNodeError::new(
+                            return Err(Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(
                                 child_node.name.clone(),
                                 "tn",
                             )));
@@ -2500,7 +2500,7 @@ impl SlideTiming {
                         instance.build_list = if !vec.is_empty() {
                             Some(vec)
                         } else {
-                            return Err(Box::<dyn Error>::from(MissingChildNodeError::new(
+                            return Err(Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(
                                 child_node.name.clone(),
                                 "bld",
                             )));

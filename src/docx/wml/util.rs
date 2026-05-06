@@ -11,6 +11,6 @@ impl XmlNodeExt for XmlNode {
     fn get_val_attribute(&self) -> std::result::Result<&String, MissingAttributeError> {
         self.attributes
             .get("w:val")
-            .ok_or_else(|| MissingAttributeError::new(self.name.clone(), "val"))
+            .ok_or_else(|| MissingAttributeError::new::<Self>(self.name.clone(), "val"))
     }
 }

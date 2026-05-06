@@ -128,7 +128,7 @@ impl Zoom {
             }
         }
 
-        let percent = percent.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "percent"))?;
+        let percent = percent.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "percent"))?;
 
         Ok(Self { value, percent })
     }
@@ -167,11 +167,11 @@ impl WritingStyle {
             }
         }
 
-        let language = language.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "lang"))?;
-        let vendor_id = vendor_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "vendorID"))?;
-        let dll_version = dll_version.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "dllVersion"))?;
-        let check_style = check_style.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "checkStyle"))?;
-        let app_name = app_name.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "appName"))?;
+        let language = language.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "lang"))?;
+        let vendor_id = vendor_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "vendorID"))?;
+        let dll_version = dll_version.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "dllVersion"))?;
+        let check_style = check_style.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "checkStyle"))?;
+        let app_name = app_name.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "appName"))?;
 
         Ok(Self {
             language,
@@ -484,9 +484,9 @@ impl MailMerge {
         }
 
         let main_document_type =
-            main_document_type.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "mainDocumentType"))?;
+            main_document_type.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "mainDocumentType"))?;
 
-        let data_type = data_type.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "dataType"))?;
+        let data_type = data_type.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "dataType"))?;
 
         Ok(Self {
             main_document_type,
@@ -609,8 +609,8 @@ impl Kinsoku {
             }
         }
 
-        let language = language.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:lang"))?;
-        let value = value.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:val"))?;
+        let language = language.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:lang"))?;
+        let value = value.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:val"))?;
 
         Ok(Self { language, value })
     }
@@ -649,7 +649,7 @@ impl FtnEndSepRef {
         let id = xml_node
             .attributes
             .get("w:id")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:id"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:id"))?
             .parse()?;
 
         Ok(Self { id })
@@ -683,7 +683,7 @@ impl FtnDocProps {
 
         match instance.footnotes.len() {
             0..=3 => Ok(instance),
-            len => Err(Box::new(LimitViolationError::new(
+            len => Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "footnote",
                 0,
@@ -721,7 +721,7 @@ impl EdnDocProps {
 
         match instance.endnotes.len() {
             0..=3 => Ok(instance),
-            len => Err(Box::new(LimitViolationError::new(
+            len => Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "endnote",
                 0,
@@ -826,8 +826,8 @@ impl DocVar {
             }
         }
 
-        let name = name.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:name"))?;
-        let value = value.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:val"))?;
+        let name = name.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:name"))?;
+        let value = value.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:val"))?;
 
         Ok(Self { name, value })
     }
@@ -956,19 +956,19 @@ impl ColorSchemeMapping {
             }
         }
 
-        let background1 = background1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:bg1"))?;
-        let text1 = text1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:t1"))?;
-        let background2 = background2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:bg2"))?;
-        let text2 = text2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:t2"))?;
-        let accent1 = accent1.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:accent1"))?;
-        let accent2 = accent2.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:accent2"))?;
-        let accent3 = accent3.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:accent3"))?;
-        let accent4 = accent4.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:accent4"))?;
-        let accent5 = accent5.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:accent5"))?;
-        let accent6 = accent6.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:accent6"))?;
-        let hyperlink = hyperlink.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:hyperlink"))?;
+        let background1 = background1.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:bg1"))?;
+        let text1 = text1.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:t1"))?;
+        let background2 = background2.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:bg2"))?;
+        let text2 = text2.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:t2"))?;
+        let accent1 = accent1.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:accent1"))?;
+        let accent2 = accent2.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:accent2"))?;
+        let accent3 = accent3.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:accent3"))?;
+        let accent4 = accent4.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:accent4"))?;
+        let accent5 = accent5.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:accent5"))?;
+        let accent6 = accent6.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:accent6"))?;
+        let hyperlink = hyperlink.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:hyperlink"))?;
         let followed_hyperlink = followed_hyperlink
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:followedHyperlink"))?;
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:followedHyperlink"))?;
 
         Ok(Self {
             background1,
@@ -1034,7 +1034,7 @@ impl Caption {
             }
         }
 
-        let name = name.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:name"))?;
+        let name = name.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:name"))?;
 
         Ok(Self {
             name,
@@ -1067,8 +1067,8 @@ impl AutoCaption {
             }
         }
 
-        let name = name.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:name"))?;
-        let caption = caption.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:caption"))?;
+        let name = name.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:name"))?;
+        let caption = caption.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:caption"))?;
 
         Ok(Self { name, caption })
     }
@@ -1118,7 +1118,7 @@ impl Captions {
         if !instance.captions.is_empty() {
             Ok(instance)
         } else {
-            Err(Box::new(LimitViolationError::new(
+            Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "caption",
                 1,
@@ -1155,10 +1155,10 @@ impl ReadingModeInkLockDown {
         }
 
         let use_actual_pages =
-            use_actual_pages.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:actualPg"))?;
-        let width = width.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:w"))?;
-        let height = height.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:h"))?;
-        let font_size = font_size.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:fontSz"))?;
+            use_actual_pages.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:actualPg"))?;
+        let width = width.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:w"))?;
+        let height = height.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:h"))?;
+        let font_size = font_size.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:fontSz"))?;
 
         Ok(Self {
             use_actual_pages,
@@ -1192,9 +1192,9 @@ impl SmartTagType {
         }
 
         let namespaceuri =
-            namespaceuri.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:namespaceuri"))?;
-        let name = name.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:name"))?;
-        let url = url.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:url"))?;
+            namespaceuri.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:namespaceuri"))?;
+        let name = name.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:name"))?;
+        let url = url.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:url"))?;
 
         Ok(Self {
             namespaceuri,

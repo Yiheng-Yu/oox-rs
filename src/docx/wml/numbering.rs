@@ -60,7 +60,7 @@ impl XsdType for NumPicBulletChoice {
         match xml_node.local_name() {
             "drawing" => Ok(NumPicBulletChoice::Drawing(Drawing::from_xml_element(xml_node)?)),
             "pict" => Ok(NumPicBulletChoice::Picture(Picture::from_xml_element(xml_node)?)),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "NumPicBulletChoice",
             ))),
@@ -92,12 +92,12 @@ impl NumPicBullet {
             .iter()
             .find_map(NumPicBulletChoice::try_from_xml_element)
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "w:drawing|w:pict"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "w:drawing|w:pict"))?;
 
         let symbol_id = xml_node
             .attributes
             .get("w:numPicBulletId")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:numPicBulletId"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:numPicBulletId"))?
             .parse()?;
 
         Ok(Self { choice, symbol_id })
@@ -186,7 +186,7 @@ impl Lvl {
             }
         }
 
-        let level = level.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:ilvl"))?;
+        let level = level.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:ilvl"))?;
 
         let mut start = None;
         let mut numbering_format = None;
@@ -268,7 +268,7 @@ impl AbstractNum {
         let abstract_num_id = xml_node
             .attributes
             .get("w:abstractNumId")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:abstractNumId"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:abstractNumId"))?
             .parse()?;
 
         xml_node
@@ -296,7 +296,7 @@ impl AbstractNum {
             })
             .and_then(|instance| match instance.levels.len() {
                 0..=9 => Ok(instance),
-                len => Err(Box::new(LimitViolationError::new(
+                len => Err(Box::new(LimitViolationError::new::<Self>(
                     xml_node.name.clone(),
                     "w:lvl",
                     0,
@@ -330,7 +330,7 @@ impl NumLvl {
         let numbering_level = xml_node
             .attributes
             .get("w:ilvl")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:ilvl"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:ilvl"))?
             .parse()?;
 
         xml_node
@@ -362,7 +362,7 @@ impl Num {
         let numbering_id = xml_node
             .attributes
             .get("w:numId")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "w:numId"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "w:numId"))?
             .parse()?;
 
         let mut abstract_num_id = None;
@@ -377,7 +377,7 @@ impl Num {
         }
 
         let abstract_num_id =
-            abstract_num_id.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "w:abstractNumId"))?;
+            abstract_num_id.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "w:abstractNumId"))?;
 
         match level_overrides.len() {
             0..=9 => Ok(Self {
@@ -385,7 +385,7 @@ impl Num {
                 level_overrides,
                 numbering_id,
             }),
-            len => Err(Box::new(LimitViolationError::new(
+            len => Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "w:lvlOverride",
                 0,

@@ -110,7 +110,7 @@ impl LsdException {
             }
         }
 
-        let name = name.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "name"))?;
+        let name = name.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "name"))?;
         Ok(Self {
             name,
             locked,
@@ -209,7 +209,7 @@ impl TblStylePr {
         let override_type = xml_node
             .attributes
             .get("w:type")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "type"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "type"))?
             .parse()?;
 
         let initial_state = Self {

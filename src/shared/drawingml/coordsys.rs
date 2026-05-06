@@ -34,8 +34,8 @@ impl Point2D {
             }
         }
 
-        let x = x.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "x"))?;
-        let y = y.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "y"))?;
+        let x = x.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "x"))?;
+        let y = y.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "y"))?;
 
         Ok(Self { x, y })
     }
@@ -68,8 +68,8 @@ impl PositiveSize2D {
             }
         }
 
-        let width = opt_width.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "cx"))?;
-        let height = opt_height.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "cy"))?;
+        let width = opt_width.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "cx"))?;
+        let height = opt_height.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "cy"))?;
 
         Ok(Self { width, height })
     }

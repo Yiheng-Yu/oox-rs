@@ -35,7 +35,7 @@ impl EffectStyleItem {
         }
 
         let effect_props =
-            effect_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_EffectProperties"))?;
+            effect_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_EffectProperties"))?;
 
         Ok(Self { effect_props })
     }
@@ -55,7 +55,7 @@ impl StyleMatrixReference {
         let index = xml_node
             .attributes
             .get("idx")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "idx"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "idx"))?
             .parse()?;
 
         let color = xml_node
@@ -223,7 +223,7 @@ impl StyleMatrix {
                     fill_style_list = match vec.len() {
                         len if len >= 3 => Some(vec),
                         len => {
-                            return Err(Box::new(LimitViolationError::new(
+                            return Err(Box::new(LimitViolationError::new::<Self>(
                                 String::from("fillStyleLst"),
                                 "EG_FillProperties",
                                 3,
@@ -244,7 +244,7 @@ impl StyleMatrix {
                     line_style_list = match vec.len() {
                         len if len >= 3 => Some(vec),
                         len => {
-                            return Err(Box::new(LimitViolationError::new(
+                            return Err(Box::new(LimitViolationError::new::<Self>(
                                 String::from("lnStyleLst"),
                                 "ln",
                                 3,
@@ -265,7 +265,7 @@ impl StyleMatrix {
                     effect_style_list = match vec.len() {
                         len if len >= 3 => Some(vec),
                         len => {
-                            return Err(Box::new(LimitViolationError::new(
+                            return Err(Box::new(LimitViolationError::new::<Self>(
                                 String::from("effectStyleLst"),
                                 "effectStyle",
                                 3,
@@ -285,7 +285,7 @@ impl StyleMatrix {
                     bg_fill_style_list = match vec.len() {
                         len if len >= 3 => Some(vec),
                         len => {
-                            return Err(Box::new(LimitViolationError::new(
+                            return Err(Box::new(LimitViolationError::new::<Self>(
                                 String::from("bgFillStyleLst"),
                                 "EG_FillProperties",
                                 3,
@@ -300,16 +300,16 @@ impl StyleMatrix {
         }
 
         let fill_style_list =
-            fill_style_list.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "fillStyleLst"))?;
+            fill_style_list.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "fillStyleLst"))?;
 
         let line_style_list =
-            line_style_list.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "lnStyleLst"))?;
+            line_style_list.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "lnStyleLst"))?;
 
         let effect_style_list =
-            effect_style_list.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "effectStyleLst"))?;
+            effect_style_list.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "effectStyleLst"))?;
 
         let bg_fill_style_list =
-            bg_fill_style_list.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "bgFillStyleLst"))?;
+            bg_fill_style_list.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "bgFillStyleLst"))?;
 
         Ok(Self {
             name,
@@ -347,8 +347,8 @@ impl SupplementalFont {
             }
         }
 
-        let script = script.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "script"))?;
-        let typeface = typeface.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "typeface"))?;
+        let script = script.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "script"))?;
+        let typeface = typeface.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "typeface"))?;
 
         Ok(Self { script, typeface })
     }
@@ -366,7 +366,7 @@ impl FontReference {
         let index = xml_node
             .attributes
             .get("idx")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "idx"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "idx"))?
             .parse()?;
 
         let color = xml_node
@@ -444,7 +444,7 @@ impl FontScheme {
         let name = xml_node
             .attributes
             .get("name")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "name"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "name"))?
             .clone();
 
         let mut major_font = None;
@@ -458,8 +458,8 @@ impl FontScheme {
             }
         }
 
-        let major_font = major_font.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "majorFont"))?;
-        let minor_font = minor_font.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "minorFont"))?;
+        let major_font = major_font.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "majorFont"))?;
+        let minor_font = minor_font.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "minorFont"))?;
 
         Ok(Self {
             name,
@@ -498,11 +498,11 @@ impl DefaultShapeDefinition {
         }
 
         let shape_properties =
-            shape_properties.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "spPr"))?;
+            shape_properties.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "spPr"))?;
         let text_body_properties =
-            text_body_properties.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "bodyPr"))?;
+            text_body_properties.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "bodyPr"))?;
         let text_list_style =
-            text_list_style.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "lstStyle"))?;
+            text_list_style.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "lstStyle"))?;
 
         Ok(Self {
             shape_properties,
@@ -546,9 +546,9 @@ impl FontCollection {
             }
         }
 
-        let latin = opt_latin.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "latin"))?;
-        let east_asian = opt_ea.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "ea"))?;
-        let complex_script = opt_cs.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cs"))?;
+        let latin = opt_latin.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "latin"))?;
+        let east_asian = opt_ea.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "ea"))?;
+        let complex_script = opt_cs.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cs"))?;
 
         Ok(Self {
             latin,

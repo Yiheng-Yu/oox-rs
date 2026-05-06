@@ -61,10 +61,10 @@ impl EffectExtent {
         }
 
         Ok(Self {
-            left: left.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "l"))?,
-            top: top.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "t"))?,
-            right: right.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r"))?,
-            bottom: bottom.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "b"))?,
+            left: left.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "l"))?,
+            top: top.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "t"))?,
+            right: right.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r"))?,
+            bottom: bottom.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "b"))?,
         })
     }
 }
@@ -120,11 +120,11 @@ impl Inline {
         }
 
         Ok(Self {
-            extent: extent.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "extent"))?,
+            extent: extent.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "extent"))?,
             effect_extent,
-            doc_properties: doc_properties.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "docPr"))?,
+            doc_properties: doc_properties.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "docPr"))?,
             graphic_frame_properties,
-            graphic: graphic.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "graphic"))?,
+            graphic: graphic.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "graphic"))?,
             distance_top,
             distance_bottom,
             distance_left,
@@ -172,10 +172,10 @@ impl WrapPath {
             }
         }
 
-        let start = start.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "start"))?;
+        let start = start.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "start"))?;
         match line_to.len() {
             occurs if occurs >= 2 => Ok(Self { start, line_to, edited }),
-            occurs => Err(Box::new(LimitViolationError::new(
+            occurs => Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "lineTo",
                 2,
@@ -225,7 +225,7 @@ impl WrapSquare {
 
         Ok(Self {
             effect_extent,
-            wrap_text: wrap_text.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "wrapText"))?,
+            wrap_text: wrap_text.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "wrapText"))?,
             distance_top,
             distance_bottom,
             distance_left,
@@ -262,12 +262,12 @@ impl WrapTight {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "wrapPolygon")
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "wrapPolygon").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "wrapPolygon").into())
             .and_then(WrapPath::from_xml_element)?;
 
         Ok(Self {
             wrap_polygon,
-            wrap_text: wrap_text.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "wrapText"))?,
+            wrap_text: wrap_text.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "wrapText"))?,
             distance_left,
             distance_right,
         })
@@ -302,12 +302,12 @@ impl WrapThrough {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "wrapPolygon")
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "wrapPolygon").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "wrapPolygon").into())
             .and_then(WrapPath::from_xml_element)?;
 
         Ok(Self {
             wrap_polygon,
-            wrap_text: wrap_text.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "wrapText"))?,
+            wrap_text: wrap_text.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "wrapText"))?,
             distance_left,
             distance_right,
         })
@@ -373,7 +373,7 @@ impl WrapType {
             "wrapTight" => Ok(WrapType::Tight(WrapTight::from_xml_element(xml_node)?)),
             "wrapThrough" => Ok(WrapType::Through(WrapThrough::from_xml_element(xml_node)?)),
             "wrapTopAndBottom" => Ok(WrapType::TopAndBottom(WrapTopBottom::from_xml_element(xml_node)?)),
-            _ => Err(Box::new(NotGroupMemberError::new(xml_node.name.clone(), "WrapType"))),
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "WrapType"))),
         }
     }
 }
@@ -432,7 +432,7 @@ impl PosHChoice {
                 let alignment = xml_node
                     .text
                     .as_ref()
-                    .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "Text node"))?
+                    .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "Text node"))?
                     .parse()?;
 
                 Ok(PosHChoice::Align(alignment))
@@ -441,12 +441,12 @@ impl PosHChoice {
                 let offset = xml_node
                     .text
                     .as_ref()
-                    .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "Text node"))?
+                    .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "Text node"))?
                     .parse()?;
 
                 Ok(PosHChoice::PositionOffset(offset))
             }
-            _ => Err(Box::new(NotGroupMemberError::new(xml_node.name.clone(), "PosHChoice"))),
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "PosHChoice"))),
         }
     }
 }
@@ -462,14 +462,14 @@ impl PosH {
         let relative_from = xml_node
             .attributes
             .get("relativeFrom")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "relativeFrom"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "relativeFrom"))?
             .parse()?;
 
         let align_or_offset = xml_node
             .child_nodes
             .iter()
             .find(|child_node| PosHChoice::is_choice_member(child_node.local_name()))
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "align|posOffset").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "align|posOffset").into())
             .and_then(PosHChoice::from_xml_element)?;
 
         Ok(Self {
@@ -532,7 +532,7 @@ impl PosVChoice {
                 let alignment = xml_node
                     .text
                     .as_ref()
-                    .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "Text node"))?
+                    .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "Text node"))?
                     .parse()?;
 
                 Ok(PosVChoice::Align(alignment))
@@ -541,12 +541,12 @@ impl PosVChoice {
                 let offset = xml_node
                     .text
                     .as_ref()
-                    .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "Text node"))?
+                    .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "Text node"))?
                     .parse()?;
 
                 Ok(PosVChoice::PositionOffset(offset))
             }
-            _ => Err(Box::new(NotGroupMemberError::new(xml_node.name.clone(), "PosVChoice"))),
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "PosVChoice"))),
         }
     }
 }
@@ -562,14 +562,14 @@ impl PosV {
         let relative_from = xml_node
             .attributes
             .get("relativeFrom")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "relativeFrom"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "relativeFrom"))?
             .parse()?;
 
         let align_or_offset = xml_node
             .child_nodes
             .iter()
             .find(|child_node| PosVChoice::is_choice_member(child_node.local_name()))
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "align|posOffset").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "align|posOffset").into())
             .and_then(PosVChoice::from_xml_element)?;
 
         Ok(Self {
@@ -665,25 +665,25 @@ impl Anchor {
         }
 
         let simple_position =
-            simple_position.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "simplePos"))?;
+            simple_position.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "simplePos"))?;
         let horizontal_position =
-            horizontal_position.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "positionH"))?;
+            horizontal_position.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "positionH"))?;
         let vertical_position =
-            vertical_position.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "positionV"))?;
-        let extent = extent.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "extent"))?;
-        let wrap_type = wrap_type.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "WrapType"))?;
+            vertical_position.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "positionV"))?;
+        let extent = extent.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "extent"))?;
+        let wrap_type = wrap_type.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "WrapType"))?;
         let document_properties =
-            document_properties.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "docPr"))?;
-        let graphic = graphic.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "graphic"))?;
+            document_properties.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "docPr"))?;
+        let graphic = graphic.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "graphic"))?;
         let relative_height =
-            relative_height.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "relativeHeight"))?;
+            relative_height.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "relativeHeight"))?;
         let behind_document_text =
-            behind_document_text.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "behindDoc"))?;
-        let locked = locked.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "locked"))?;
+            behind_document_text.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "behindDoc"))?;
+        let locked = locked.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "locked"))?;
         let layout_in_cell =
-            layout_in_cell.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "layoutInCell"))?;
+            layout_in_cell.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "layoutInCell"))?;
         let allow_overlap =
-            allow_overlap.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "allowOverlap"))?;
+            allow_overlap.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "allowOverlap"))?;
 
         Ok(Self {
             simple_position,
@@ -724,7 +724,7 @@ impl TxbxContent {
             .collect::<Result<Vec<_>>>()?;
 
         if block_level_elements.is_empty() {
-            Err(Box::new(LimitViolationError::new(
+            Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "BlockLevelElts",
                 1,
@@ -751,7 +751,7 @@ impl TextboxInfo {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "txbxContent")
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "txbxContent").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "txbxContent").into())
             .and_then(TxbxContent::from_xml_element)?;
 
         Ok(Self { textbox_content, id })
@@ -778,8 +778,8 @@ impl LinkedTextboxInformation {
         }
 
         Ok(Self {
-            id: id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "id"))?,
-            sequence: sequence.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "seq"))?,
+            id: id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "id"))?,
+            sequence: sequence.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "seq"))?,
         })
     }
 }
@@ -854,11 +854,11 @@ impl WordprocessingShape {
         }
 
         let properties =
-            properties.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvSpPr|cNvCnPr"))?;
+            properties.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvSpPr|cNvCnPr"))?;
         let shape_properties =
-            shape_properties.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "spPr"))?;
+            shape_properties.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "spPr"))?;
         let text_body_properties =
-            text_body_properties.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "bodyPr"))?;
+            text_body_properties.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "bodyPr"))?;
 
         Ok(Self {
             non_visual_drawing_props,
@@ -898,11 +898,11 @@ impl GraphicFrame {
         }
 
         let non_visual_drawing_props =
-            non_visual_drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
+            non_visual_drawing_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvPr"))?;
         let non_visual_props =
-            non_visual_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvFrPr"))?;
-        let transform = transform.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "xfrm"))?;
-        let graphic = graphic.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "graphic"))?;
+            non_visual_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvFrPr"))?;
+        let transform = transform.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "xfrm"))?;
+        let graphic = graphic.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "graphic"))?;
 
         Ok(Self {
             non_visual_drawing_props,
@@ -962,7 +962,7 @@ impl WordprocessingContentPart {
         }
 
         let relationship_id =
-            relationship_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r:id"))?;
+            relationship_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r:id"))?;
 
         let mut properties = None;
         let mut transform = None;
@@ -1038,9 +1038,9 @@ impl WordprocessingGroup {
         }
 
         let non_visual_drawing_shape_props = non_visual_drawing_shape_props
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvGrpSpPr"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvGrpSpPr"))?;
         let group_shape_props =
-            group_shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "grpSpPr"))?;
+            group_shape_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "grpSpPr"))?;
 
         Ok(Self {
             non_visual_drawing_props,

@@ -460,8 +460,8 @@ impl IndexRange {
             }
         }
 
-        let start = start.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "st"))?;
-        let end = end.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "end"))?;
+        let start = start.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "st"))?;
+        let end = end.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "end"))?;
 
         Ok(Self { start, end })
     }
@@ -803,7 +803,7 @@ impl XsdType for TimeNodeGroup {
             "video" => Ok(TimeNodeGroup::Video(Box::new(TLMediaNodeVideo::from_xml_element(
                 xml_node,
             )?))),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "TimeNodeGroup",
             ))),
@@ -1068,7 +1068,7 @@ impl TLCommonBehaviorData {
                             .child_nodes
                             .first()
                             .ok_or_else(|| {
-                                MissingChildNodeError::new(child_node.name.clone(), "sldTgt|sndTgt|spTgt|inkTgt").into()
+                                MissingChildNodeError::new::<Self>(child_node.name.clone(), "sldTgt|sndTgt|spTgt|inkTgt").into()
                             })
                             .and_then(TLTimeTargetElement::from_xml_element)?,
                     );
@@ -1082,7 +1082,7 @@ impl TLCommonBehaviorData {
                         .collect::<Vec<_>>();
 
                     if vec.is_empty() {
-                        return Err(Box::new(LimitViolationError::new(
+                        return Err(Box::new(LimitViolationError::new::<Self>(
                             child_node.name.clone(),
                             "attrName",
                             1,
@@ -1098,9 +1098,9 @@ impl TLCommonBehaviorData {
         }
 
         let common_time_node_data =
-            common_time_node_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cTn"))?;
+            common_time_node_data.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cTn"))?;
         let target_element =
-            target_element.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "tgtEl"))?;
+            target_element.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "tgtEl"))?;
 
         Ok(Self {
             additive,
@@ -1184,7 +1184,7 @@ impl TLCommonMediaNodeData {
                             .child_nodes
                             .first()
                             .ok_or_else(|| {
-                                MissingChildNodeError::new(child_node.name.clone(), "TLTimeTargetElement").into()
+                                MissingChildNodeError::new::<Self>(child_node.name.clone(), "TLTimeTargetElement").into()
                             })
                             .and_then(TLTimeTargetElement::from_xml_element)?,
                     )
@@ -1194,9 +1194,9 @@ impl TLCommonMediaNodeData {
         }
 
         let common_time_node_data =
-            common_time_node_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cTn"))?;
+            common_time_node_data.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cTn"))?;
         let target_element =
-            target_element.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "tgtEl"))?;
+            target_element.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "tgtEl"))?;
 
         Ok(Self {
             volume,
@@ -1274,8 +1274,8 @@ impl TLBuildParagraph {
             }
         }
 
-        let shape_id = shape_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "spid"))?;
-        let group_id = group_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "grpId"))?;
+        let shape_id = shape_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "spid"))?;
+        let group_id = group_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "grpId"))?;
 
         let template_list = xml_node
             .child_nodes
@@ -1322,8 +1322,8 @@ impl TLPoint {
             }
         }
 
-        let x = x.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "x"))?;
-        let y = y.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "y"))?;
+        let x = x.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "x"))?;
+        let y = y.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "y"))?;
 
         Ok(Self { x, y })
     }
@@ -1363,7 +1363,7 @@ impl TLTemplate {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "tnLst")
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "tnLst").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "tnLst").into())
             .and_then(TLTimeNodeList::from_xml_element)?;
 
         Ok(Self { level, time_node_list })
@@ -1384,7 +1384,7 @@ impl TLTemplateList {
 
         match vec.len() {
             0..=9 => Ok(Self(vec)),
-            len => Err(Box::new(LimitViolationError::new(
+            len => Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "tmpl",
                 0,
@@ -1438,8 +1438,8 @@ impl TLBuildDiagram {
             }
         }
 
-        let shape_id = shape_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "spid"))?;
-        let group_id = group_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "grpId"))?;
+        let shape_id = shape_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "spid"))?;
+        let group_id = group_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "grpId"))?;
 
         Ok(Self {
             build_common: TLBuildCommonAttributes {
@@ -1485,8 +1485,8 @@ impl TLOleBuildChart {
             }
         }
 
-        let shape_id = shape_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "spid"))?;
-        let group_id = group_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "grpId"))?;
+        let shape_id = shape_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "spid"))?;
+        let group_id = group_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "grpId"))?;
 
         Ok(Self {
             build_common: TLBuildCommonAttributes {
@@ -1526,10 +1526,10 @@ impl TLGraphicalObjectBuild {
             .iter()
             .find_map(TLGraphicalObjectBuildChoice::try_from_xml_element)
             .transpose()?
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "TLGraphicalObjectBuildChoice"))?;
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "TLGraphicalObjectBuildChoice"))?;
 
-        let shape_id = shape_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "spid"))?;
-        let group_id = group_id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "grpId"))?;
+        let shape_id = shape_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "spid"))?;
+        let group_id = group_id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "grpId"))?;
 
         Ok(Self {
             build_common: TLBuildCommonAttributes {
@@ -1584,7 +1584,7 @@ impl XsdType for TLGraphicalObjectBuildChoice {
             "bldSub" => Ok(TLGraphicalObjectBuildChoice::BuildSubElements(
                 AnimationGraphicalObjectBuildProperties::from_xml_element(xml_node)?,
             )),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "TLGraphicalObjectBuildChoice",
             ))),
@@ -1703,7 +1703,7 @@ impl TLTimeNodeSequence {
         }
 
         let common_time_node_data =
-            common_time_node_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cTn"))?;
+            common_time_node_data.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cTn"))?;
 
         Ok(Self {
             concurrent,
@@ -1783,7 +1783,7 @@ impl TLAnimateBehavior {
         }
 
         let common_behavior_data =
-            common_behavior_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cBhvr"))?;
+            common_behavior_data.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cBhvr"))?;
 
         Ok(Self {
             by,
@@ -1905,7 +1905,7 @@ impl TLAnimateColorBehavior {
                             .find_map(TLByAnimateColorTransform::try_from_xml_element)
                             .transpose()?
                             .ok_or_else(|| {
-                                MissingChildNodeError::new(child_node.name.clone(), "TLByAnimateColorTransform")
+                                MissingChildNodeError::new::<Self>(child_node.name.clone(), "TLByAnimateColorTransform")
                             })?,
                     )
                 }
@@ -1916,7 +1916,7 @@ impl TLAnimateColorBehavior {
                             .iter()
                             .find_map(Color::try_from_xml_element)
                             .transpose()?
-                            .ok_or_else(|| MissingChildNodeError::new(child_node.name.clone(), "EG_Color"))?,
+                            .ok_or_else(|| MissingChildNodeError::new::<Self>(child_node.name.clone(), "EG_Color"))?,
                     )
                 }
                 "to" => {
@@ -1926,7 +1926,7 @@ impl TLAnimateColorBehavior {
                             .iter()
                             .find_map(Color::try_from_xml_element)
                             .transpose()?
-                            .ok_or_else(|| MissingChildNodeError::new(child_node.name.clone(), "EG_Color"))?,
+                            .ok_or_else(|| MissingChildNodeError::new::<Self>(child_node.name.clone(), "EG_Color"))?,
                     )
                 }
                 _ => (),
@@ -1934,7 +1934,7 @@ impl TLAnimateColorBehavior {
         }
 
         let common_behavior_data =
-            common_behavior_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cBhvr"))?;
+            common_behavior_data.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cBhvr"))?;
 
         Ok(Self {
             color_space,
@@ -2053,7 +2053,7 @@ impl TLAnimateEffectBehavior {
                             .iter()
                             .find_map(TLAnimVariant::try_from_xml_element)
                             .transpose()?
-                            .ok_or_else(|| MissingChildNodeError::new(child_node.name.clone(), "CT_TLAnimVariant"))?,
+                            .ok_or_else(|| MissingChildNodeError::new::<Self>(child_node.name.clone(), "CT_TLAnimVariant"))?,
                     )
                 }
                 _ => (),
@@ -2061,7 +2061,7 @@ impl TLAnimateEffectBehavior {
         }
 
         let common_behavior_data =
-            common_behavior_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cBhvr"))?;
+            common_behavior_data.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cBhvr"))?;
 
         Ok(Self {
             transition,
@@ -2201,7 +2201,7 @@ impl TLAnimateMotionBehavior {
         }
 
         let common_behavior_data =
-            common_behavior_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cBhvr"))?;
+            common_behavior_data.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cBhvr"))?;
 
         Ok(Self {
             origin,
@@ -2248,7 +2248,7 @@ impl TLAnimateRotationBehavior {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "cBhvr")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "cBhvr")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cBhvr")))
             .and_then(TLCommonBehaviorData::from_xml_element)?
             .into();
 
@@ -2348,7 +2348,7 @@ impl TLAnimateScaleBehavior {
         }
 
         let common_behavior_data =
-            common_behavior_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cBhvr"))?;
+            common_behavior_data.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cBhvr"))?;
 
         Ok(Self {
             zoom_contents,
@@ -2446,7 +2446,7 @@ impl TLCommandBehavior {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "cBhvr")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "cBhvr")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cBhvr")))
             .and_then(TLCommonBehaviorData::from_xml_element)?
             .into();
 
@@ -2496,7 +2496,7 @@ impl TLSetBehavior {
                             .iter()
                             .find_map(TLAnimVariant::try_from_xml_element)
                             .transpose()?
-                            .ok_or_else(|| MissingChildNodeError::new(child_node.name.clone(), "CT_TLAnimVariant"))?,
+                            .ok_or_else(|| MissingChildNodeError::new::<Self>(child_node.name.clone(), "CT_TLAnimVariant"))?,
                     )
                 }
                 _ => (),
@@ -2504,7 +2504,7 @@ impl TLSetBehavior {
         }
 
         let common_behavior_data =
-            common_behavior_data.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cBhvr"))?;
+            common_behavior_data.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cBhvr"))?;
 
         Ok(Self {
             common_behavior_data,
@@ -2530,7 +2530,7 @@ impl TLMediaNodeAudio {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "cMediaNode")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "cMediaNode")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cMediaNode")))
             .and_then(TLCommonMediaNodeData::from_xml_element)?
             .into();
 
@@ -2558,7 +2558,7 @@ impl TLMediaNodeVideo {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "cMediaNode")
-            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "cMediaNode")))
+            .ok_or_else(|| Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cMediaNode")))
             .and_then(TLCommonMediaNodeData::from_xml_element)?
             .into();
 
@@ -2802,7 +2802,7 @@ impl TLTimeAnimateValue {
                             .child_nodes
                             .iter()
                             .find(|val_node| TLAnimVariant::is_choice_member(val_node.local_name()))
-                            .ok_or_else(|| MissingChildNodeError::new(child_node.name.clone(), "TLAnimVariant").into())
+                            .ok_or_else(|| MissingChildNodeError::new::<Self>(child_node.name.clone(), "TLAnimVariant").into())
                             .and_then(TLAnimVariant::from_xml_element)
                     })
                     .transpose()?;
@@ -2907,10 +2907,10 @@ impl XsdType for TLAnimVariant {
                     .iter()
                     .find_map(Color::try_from_xml_element)
                     .transpose()?
-                    .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_Color"))?;
+                    .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_Color"))?;
                 Ok(TLAnimVariant::Color(color))
             }
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_TLAnimVariant").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_TLAnimVariant").into()),
         }
     }
 }
@@ -2979,7 +2979,7 @@ impl XsdType for TLTimeConditionTriggerGroup {
                     .iter()
                     .find_map(TLTimeTargetElement::try_from_xml_element)
                     .transpose()?
-                    .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "sldTgt|sndTgt|spTgt|inkTgt"))?;
+                    .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "sldTgt|sndTgt|spTgt|inkTgt"))?;
 
                 Ok(TLTimeConditionTriggerGroup::TargetElement(target_element))
             }
@@ -2991,7 +2991,7 @@ impl XsdType for TLTimeConditionTriggerGroup {
                 let val = xml_node.get_val_attribute()?.parse()?;
                 Ok(TLTimeConditionTriggerGroup::RuntimeNode(val))
             }
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "EG_TLTimeConditionTriggerGroup",
             ))),
@@ -3099,12 +3099,12 @@ impl XsdType for TLTimeTargetElement {
                 let spid = xml_node
                     .attributes
                     .get("spid")
-                    .ok_or_else(|| Box::<dyn Error>::from(MissingAttributeError::new(xml_node.name.clone(), "spid")))
+                    .ok_or_else(|| Box::<dyn Error>::from(MissingAttributeError::new::<Self>(xml_node.name.clone(), "spid")))
                     .and_then(|value| value.parse().map_err(Into::into))?;
 
                 Ok(TLTimeTargetElement::InkTarget(spid))
             }
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "CT_TLTimeTargetElement",
             ))),
@@ -3140,7 +3140,7 @@ impl TLShapeTargetElement {
         let shape_id = xml_node
             .attributes
             .get("spid")
-            .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "spid"))?
+            .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "spid"))?
             .parse()?;
 
         let target = xml_node
@@ -3252,7 +3252,7 @@ impl XsdType for TLShapeTargetElementGroup {
                 let spid = xml_node
                     .attributes
                     .get("spid")
-                    .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "spid"))?
+                    .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "spid"))?
                     .parse()?;
 
                 Ok(TLShapeTargetElementGroup::SubShape(spid))
@@ -3275,11 +3275,11 @@ impl XsdType for TLShapeTargetElementGroup {
                     .iter()
                     .find_map(AnimationElementChoice::try_from_xml_element)
                     .transpose()?
-                    .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "CT_AnimationElementChoice"))?;
+                    .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "CT_AnimationElementChoice"))?;
 
                 Ok(TLShapeTargetElementGroup::GraphicElement(animation_element))
             }
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "TLShapeTargetElementGroup",
             ))),
@@ -3322,7 +3322,7 @@ impl TLOleChartTargetElement {
             }
         }
 
-        let element_type = element_type.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "type"))?;
+        let element_type = element_type.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "type"))?;
 
         Ok(Self { element_type, level })
     }
@@ -3383,7 +3383,7 @@ impl XsdType for TLTextTargetElement {
             "pRg" => Ok(TLTextTargetElement::ParagraphRange(IndexRange::from_xml_element(
                 xml_node,
             )?)),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "TLTextTargetElement",
             ))),
@@ -3474,7 +3474,7 @@ impl TLTimeConditionList {
             .collect::<Result<Vec<_>>>()?;
 
         if list.is_empty() {
-            Err(Box::new(LimitViolationError::new(
+            Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "cond",
                 1,
@@ -3782,7 +3782,7 @@ impl XsdType for TLIterateDataChoice {
         match xml_node.local_name() {
             "tmAbs" => Ok(TLIterateDataChoice::Absolute(xml_node.get_val_attribute()?.parse()?)),
             "tmPct" => Ok(TLIterateDataChoice::Percent(xml_node.get_val_attribute()?.parse()?)),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "TLIterateDataChoice",
             ))),
@@ -3836,7 +3836,7 @@ impl TLIterateData {
         let interval = xml_node
             .child_nodes
             .first()
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "TLIterateDataChoice").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "TLIterateDataChoice").into())
             .and_then(TLIterateDataChoice::from_xml_element)?;
 
         Ok(Self {
@@ -3902,7 +3902,7 @@ impl XsdType for TLByAnimateColorTransform {
             "hsl" => Ok(TLByAnimateColorTransform::Hsl(TLByHslColorTransform::from_xml_element(
                 xml_node,
             )?)),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "TLByAnimateColorTransform",
             ))),
@@ -3947,9 +3947,9 @@ impl TLByRgbColorTransform {
             }
         }
 
-        let r = r.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "r"))?;
-        let g = g.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "g"))?;
-        let b = b.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "b"))?;
+        let r = r.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "r"))?;
+        let g = g.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "g"))?;
+        let b = b.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "b"))?;
 
         Ok(Self { r, g, b })
     }
@@ -3980,9 +3980,9 @@ impl TLByHslColorTransform {
             }
         }
 
-        let h = h.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "h"))?;
-        let s = s.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "s"))?;
-        let l = l.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "l"))?;
+        let h = h.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "h"))?;
+        let s = s.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "s"))?;
+        let l = l.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "l"))?;
 
         Ok(Self { h, s, l })
     }
@@ -4063,7 +4063,7 @@ impl XsdType for Build {
             "bldGraphic" => Ok(Build::Graphic(Box::new(TLGraphicalObjectBuild::from_xml_element(
                 xml_node,
             )?))),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "CT_BuildList",
             ))),

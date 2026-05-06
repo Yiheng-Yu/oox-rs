@@ -116,7 +116,7 @@ impl TextFont {
             }
         }
 
-        let typeface = typeface.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "typeface"))?;
+        let typeface = typeface.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "typeface"))?;
 
         Ok(Self {
             typeface,
@@ -223,7 +223,7 @@ impl XsdType for TextRun {
             )?))),
             "br" => Ok(TextRun::LineBreak(Box::new(TextLineBreak::from_xml_element(xml_node)?))),
             "fld" => Ok(TextRun::TextField(Box::new(TextField::from_xml_element(xml_node)?))),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_TextRun").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_TextRun").into()),
         }
     }
 }
@@ -295,7 +295,7 @@ impl RegularTextRun {
             }
         }
 
-        let text = text.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "t"))?;
+        let text = text.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "t"))?;
         Ok(Self { char_properties, text })
     }
 }
@@ -357,7 +357,7 @@ impl XsdType for TextUnderlineLine {
             "uLn" => Ok(TextUnderlineLine::Line(Box::new(LineProperties::from_xml_element(
                 xml_node,
             )?))),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_TextUnderlineLine").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_TextUnderlineLine").into()),
         }
     }
 }
@@ -442,11 +442,11 @@ impl TextUnderlineFill {
                     .iter()
                     .find_map(FillProperties::try_from_xml_element)
                     .transpose()?
-                    .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "EG_FillProperties"))?;
+                    .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_FillProperties"))?;
 
                 Ok(TextUnderlineFill::Fill(fill_properties))
             }
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_TextUnderlineFill").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_TextUnderlineFill").into()),
         }
     }
 }

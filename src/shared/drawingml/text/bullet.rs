@@ -76,11 +76,11 @@ impl XsdType for TextBulletColor {
                     .iter()
                     .find_map(Color::try_from_xml_element)
                     .transpose()?
-                    .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "color"))?;
+                    .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "color"))?;
 
                 Ok(TextBulletColor::Color(color))
             }
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_TextBulletColor").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_TextBulletColor").into()),
         }
     }
 }
@@ -180,7 +180,7 @@ impl XsdType for TextBulletSize {
                 let val = xml_node
                     .attributes
                     .get("val")
-                    .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "val"))?
+                    .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "val"))?
                     .parse()?;
 
                 Ok(TextBulletSize::Percent(val))
@@ -189,12 +189,12 @@ impl XsdType for TextBulletSize {
                 let val = xml_node
                     .attributes
                     .get("val")
-                    .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "val"))?
+                    .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "val"))?
                     .parse()?;
 
                 Ok(TextBulletSize::Point(val))
             }
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_TextBulletSize").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_TextBulletSize").into()),
         }
     }
 }
@@ -265,7 +265,7 @@ impl XsdType for TextBulletTypeface {
         match xml_node.local_name() {
             "buFontTx" => Ok(TextBulletTypeface::FollowText),
             "buFont" => Ok(TextBulletTypeface::Font(TextFont::from_xml_element(xml_node)?)),
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_TextBulletTypeface").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_TextBulletTypeface").into()),
         }
     }
 }
@@ -451,7 +451,7 @@ impl XsdType for TextBullet {
                 let character = xml_node
                     .attributes
                     .get("char")
-                    .ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "char"))?
+                    .ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "char"))?
                     .clone();
 
                 Ok(TextBullet::Character(character))
@@ -462,13 +462,13 @@ impl XsdType for TextBullet {
                     .iter()
                     .find(|child_node| child_node.local_name() == "blip")
                     .ok_or_else(|| {
-                        Box::<dyn Error>::from(MissingChildNodeError::new(xml_node.name.clone(), "EG_TextBullet"))
+                        Box::<dyn Error>::from(MissingChildNodeError::new::<Self>(xml_node.name.clone(), "EG_TextBullet"))
                     })
                     .and_then(Blip::from_xml_element)?;
 
                 Ok(TextBullet::Picture(Box::new(blip)))
             }
-            _ => Err(NotGroupMemberError::new(xml_node.name.clone(), "EG_TextBullet").into()),
+            _ => Err(NotGroupMemberError::new::<Self>(xml_node.name.clone(), "EG_TextBullet").into()),
         }
     }
 }
@@ -510,7 +510,7 @@ impl TextAutonumberedBullet {
             }
         }
 
-        let scheme = scheme.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "type"))?;
+        let scheme = scheme.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "type"))?;
 
         Ok(Self { scheme, start_at })
     }

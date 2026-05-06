@@ -28,10 +28,10 @@ impl PictureNonVisual {
         }
 
         let non_visual_drawing_props =
-            non_visual_drawing_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPr"))?;
+            non_visual_drawing_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvPr"))?;
 
         let non_visual_picture_props =
-            non_visual_picture_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "cNvPicPr"))?;
+            non_visual_picture_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "cNvPicPr"))?;
 
         Ok(Self {
             non_visual_drawing_props,
@@ -63,12 +63,12 @@ impl Picture {
         }
 
         let non_visual_props =
-            non_visual_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "nvPicPr"))?;
+            non_visual_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "nvPicPr"))?;
 
         let blip_fill_props =
-            blip_fill_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "blipFill"))?;
+            blip_fill_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "blipFill"))?;
 
-        let shape_props = shape_props.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "spPr"))?;
+        let shape_props = shape_props.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "spPr"))?;
 
         Ok(Self {
             non_visual_props,

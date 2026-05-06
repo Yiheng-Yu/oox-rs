@@ -288,7 +288,7 @@ impl TblPrChange {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "tblPr")
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "tblPr").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "tblPr").into())
             .and_then(TblPrBase::from_xml_element)?;
 
         Ok(Self { base, properties })
@@ -456,7 +456,7 @@ impl TblPrExChange {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "tblPrEx")
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "tblPrEx").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "tblPrEx").into())
             .and_then(TblPrExBase::from_xml_element)?;
 
         Ok(Self { base, properties_ex })
@@ -548,7 +548,7 @@ impl TrPrChange {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "trPr")
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "trPr").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "trPr").into())
             .and_then(TrPrBase::from_xml_element)?;
 
         Ok(Self { base, properties })
@@ -785,7 +785,7 @@ impl XsdType for CellMarkupElements {
             "cellMerge" => Ok(CellMarkupElements::Merge(CellMergeTrackChange::from_xml_element(
                 xml_node,
             )?)),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "CellMarkupElements",
             ))),
@@ -844,7 +844,7 @@ impl TcPrChange {
             .child_nodes
             .iter()
             .find(|child_node| child_node.local_name() == "tcPr")
-            .ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "tcPr").into())
+            .ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "tcPr").into())
             .and_then(TcPrInner::from_xml_element)?;
 
         Ok(Self { base, properties })
@@ -904,7 +904,7 @@ impl Tc {
         }
 
         if instance.block_level_elements.is_empty() {
-            Err(Box::new(LimitViolationError::new(
+            Err(Box::new(LimitViolationError::new::<Self>(
                 xml_node.name.clone(),
                 "BlockLevelElts",
                 1,
@@ -940,7 +940,7 @@ impl CustomXmlCell {
             }
         }
 
-        let element = element.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "element"))?;
+        let element = element.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "element"))?;
 
         let mut custom_xml_properties = None;
         let mut contents = Vec::new();
@@ -1029,7 +1029,7 @@ impl XsdType for ContentCellContent {
             node_name if RunLevelElts::is_choice_member(node_name) => Ok(ContentCellContent::RunLevelElement(
                 RunLevelElts::from_xml_element(xml_node)?,
             )),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "ContentCellContent",
             ))),
@@ -1111,7 +1111,7 @@ impl CustomXmlRow {
             }
         }
 
-        let element = element.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "element"))?;
+        let element = element.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "element"))?;
 
         let mut custom_xml_properties = None;
         let mut contents = Vec::new();
@@ -1198,7 +1198,7 @@ impl XsdType for ContentRowContent {
             node_name if RunLevelElts::is_choice_member(node_name) => Ok(ContentRowContent::RunLevelElements(
                 RunLevelElts::from_xml_element(xml_node)?,
             )),
-            _ => Err(Box::new(NotGroupMemberError::new(
+            _ => Err(Box::new(NotGroupMemberError::new::<Self>(
                 xml_node.name.clone(),
                 "ContentRowContent",
             ))),
@@ -1270,8 +1270,8 @@ impl Tbl {
             }
         }
 
-        let properties = properties.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "tblPr"))?;
-        let grid = grid.ok_or_else(|| MissingChildNodeError::new(xml_node.name.clone(), "tblGrid"))?;
+        let properties = properties.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "tblPr"))?;
+        let grid = grid.ok_or_else(|| MissingChildNodeError::new::<Self>(xml_node.name.clone(), "tblGrid"))?;
 
         Ok(Self {
             range_markup_elements,

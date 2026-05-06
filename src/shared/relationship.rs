@@ -32,9 +32,9 @@ impl Relationship {
             }
         }
 
-        let id = id.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "Id"))?;
-        let rel_type = rel_type.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "Type"))?;
-        let target = target.ok_or_else(|| MissingAttributeError::new(xml_node.name.clone(), "Target"))?;
+        let id = id.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "Id"))?;
+        let rel_type = rel_type.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "Type"))?;
+        let target = target.ok_or_else(|| MissingAttributeError::new::<Self>(xml_node.name.clone(), "Target"))?;
 
         Ok(Self { id, rel_type, target })
     }
