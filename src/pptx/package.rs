@@ -166,3 +166,18 @@ impl<'a> Iterator for Slides<'a> {
         None
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    #[test]
+    fn test_loading_office_xml() {
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let sample_pptx_path = manifest_dir.join("tests/files/sample.pptx");
+        let document = Package::from_file(&sample_pptx_path).unwrap();
+        assert_eq!(document.slides().slide_map.len(), 3)
+    }
+}
